@@ -487,7 +487,7 @@ while true; do
 	echo "5. 重啟指定容器 9. 重新啟動所有容器"
 	echo "------------------------"
 	echo "11. 進入指定容器 12. 查看容器日誌"
-	echo "13. 查看容器網路 14. 查看容器佔用"
+	echo "13. 查看容器网络           14. 查看容器占用"
 	echo "------------------------"
 	echo "15. 開啟容器連接埠存取 16. 關閉容器連接埠訪問"
 	echo "------------------------"
@@ -1534,7 +1534,7 @@ certs_status() {
 		send_stats "網域證書申請成功"
 	else
 		send_stats "網域證書申請失敗"
-		echo -e "${gl_hong}注意:${gl_bai}證書申請失敗，請檢查以下可能原因並重試："
+		echo -e "${gl_hong}注意: ${gl_bai}证书申请失败，请检查以下可能原因并重试："
 		echo -e "1. 網域拼字錯誤 ➠ 請檢查網域名稱輸入是否正確"
 		echo -e "2. DNS解析問題 ➠ 確認網域名稱已正確解析至本伺服器IP"
 		echo -e "3. 網路設定問題 ➠ 如使用Cloudflare Warp等虛擬網路請暫時關閉"
@@ -1580,7 +1580,7 @@ certs_status() {
 			done
 
 			# 3. 智能校驗
-			# 只要包含 "BEGIN CERTIFICATE" 和 "PRIVATE KEY" 即可透過
+			# 只要包含 "BEGIN CERTIFICATE" 和 "PRIVATE KEY" 即可通过
 			if [[ "$cert_content" == *"-----BEGIN CERTIFICATE-----"* && "$key_content" == *"PRIVATE KEY-----"* ]]; then
 				echo -n "$cert_content" > "$cert_file"
 				echo -n "$key_content" > "$key_file"
@@ -1644,7 +1644,7 @@ update_nginx_listen_port() {
 	local access_port="$2"
 	local conf="/home/web/conf.d/${yuming}.conf"
 
-	# 如果 access_port 為空，則跳過
+	# 如果 access_port 为空，则跳过
 	[ -z "$access_port" ] && return 0
 
 	# 刪除所有 listen 行
@@ -4231,7 +4231,7 @@ generate_access_urls() {
 			done
 		fi
 
-		# 处理 HTTPS 配置
+		# 處理 HTTPS 配置
 		for port in "${ports[@]}"; do
 			if [[ $port != "8055" && $port != "8056" ]]; then
 				local frps_search_pattern="${ipv4_address}:${port}"
@@ -4258,7 +4258,7 @@ frps_main_ports() {
 
 
 frps_panel() {
-	send_stats "FRP服务端"
+	send_stats "FRP服務端"
 	local app_id="55"
 	local docker_name="frps"
 	local docker_port=8056
@@ -4266,8 +4266,8 @@ frps_panel() {
 		clear
 		check_frp_app
 		check_docker_image_update $docker_name
-		echo -e "FRP服务端 $check_frp $update_status"
-		echo "构建FRP内网穿透服务环境，将无公网IP的设备暴露到互联网"
+		echo -e "FRP服務端$check_frp $update_status"
+		echo "建構FRP內網穿透服務環境，將無公網IP的設備暴露到互聯網"
 		echo "官網介紹:${gh_https_url}github.com/fatedier/frp/"
 		echo "影片教學: https://www.bilibili.com/video/BV1yMw6e2EwL?t=124.0"
 		if [ -d "/home/frp/" ]; then
@@ -4650,9 +4650,9 @@ linux_clean() {
 		journalctl --vacuum-size=500M
 
 	elif command -v apk &>/dev/null; then
-		echo "清理包管理器缓存..."
+		echo "清理包管理器快取..."
 		apk cache clean
-		echo "删除系统日志..."
+		echo "刪除系統日誌..."
 		rm -rf /var/log/*
 		echo "刪除APK快取..."
 		rm -rf /var/cache/apk/*
@@ -4866,7 +4866,7 @@ add_sshkey() {
 	chmod 600 "${HOME}/.ssh/authorized_keys"
 
 	ip_address
-	echo -e "私鑰資訊已生成，務必複製保存，可保存成${gl_huang}${ipv4_address}_ssh.key${gl_bai}文件，用於以後的SSH登錄"
+	echo -e "私钥信息已生成，务必复制保存，可保存成 ${gl_huang}${ipv4_address}_ssh.key${gl_bai}文件，用於以後的SSH登錄"
 
 	echo "--------------------------------"
 	cat "${HOME}/.ssh/sshkey"
@@ -5014,7 +5014,7 @@ fetch_github_ssh_keys() {
 	echo "5. 點選 Add SSH key 完成新增"
 	echo ""
 	echo "新增完成後，GitHub 會公開提供您的所有公鑰，位址為："
-	echo "  ${gh_https_url}github.com/您的使用者名稱.keys"
+	echo "  ${gh_https_url}github.com/您的用户名.keys"
 	echo ""
 
 
@@ -5925,7 +5925,7 @@ optimize_balanced() {
 	sysctl -w kernel.sched_autogroup_enabled=1 2>/dev/null
 
 	echo -e "${gl_lv}其他優化...${gl_bai}"
-	# 还原透明大页面
+	# 還原透明大頁面
 	echo always > /sys/kernel/mm/transparent_hugepage/enabled
 	# 還原 NUMA balancing
 	sysctl -w kernel.numa_balancing=1 2>/dev/null
@@ -6022,8 +6022,8 @@ Kernel_optimize() {
 	while true; do
 	  clear
 	  send_stats "Linux核心調優管理"
-	  echo "Linux系统内核参数优化"
-	  echo "视频介绍: https://www.bilibili.com/video/BV1Kb421J7yg?t=0.1"
+	  echo "Linux系統核心參數優化"
+	  echo "影片介紹: https://www.bilibili.com/video/BV1Kb421J7yg?t=0.1"
 	  echo "------------------------------------------------"
 	  echo "提供多種系統參數調優模式，使用者可依自身使用場景進行選擇切換。"
 	  echo -e "${gl_huang}提示:${gl_bai}生產環境請謹慎使用！"
@@ -9770,7 +9770,7 @@ moltbot_menu() {
 
 		# 檢查參數
 		if [[ -z "$provider_name" || -z "$models_id" || -z "$base_url" || -z "$api_key" ]]; then
-			echo "错误：参数不能为空！"
+			echo "錯誤：參數不能為空​​！"
 			echo "用法: add-openclaw-provider <provider> <model-id> <base-url> <api-key>"
 			return 1
 		fi
@@ -9942,7 +9942,7 @@ moltbot_menu() {
 				continue # 跳过本次循环，重新开始
 			fi
 
-			# 3. 執行切換邏輯
+			# 3. 执行切换逻辑
 			echo "正在切換模型為:$model ..."
 			openclaw models set "$model"
 
@@ -13122,7 +13122,7 @@ while true; do
 
 		}
 
-		local docker_describe="远程一起观看电影和直播的程序。它提供了同步觀影、直播、聊天等功能"
+		local docker_describe="遠端一起觀看電影和直播的程式。它提供了同步觀影、直播、聊天等功能"
 		local docker_url="官網介紹:${gh_https_url}github.com/synctv-org/synctv"
 		local docker_use="echo \"初始帳號與密碼: root 登陸後請及時修改登入密碼\""
 		local docker_passwd=""
@@ -14698,7 +14698,7 @@ log_menu() {
 				;;
 			4)
 				send_stats "即時追蹤日誌"
-				echo "1) 系统日志"
+				echo "1) 系統日誌"
 				echo "2) 指定服務日誌"
 				read -erp "選擇追蹤類型:" t
 				if [ "$t" = "1" ]; then
@@ -14712,7 +14712,7 @@ log_menu() {
 				;;
 			5)
 				send_stats "清理舊 journal 日誌"
-				echo "⚠️ 清理 journal 日誌（安全方式）"
+				echo "⚠️ 清理 journal 日志（安全方式）"
 				echo "1) 保留最近 7 天"
 				echo "2) 保留最近 3 天"
 				echo "3) 限制日誌最大 500M"
@@ -14873,7 +14873,7 @@ create_user_with_sshkey() {
 		return 1
 	fi
 
-	# 創建用戶
+	# 创建用户
 	useradd -m -s /bin/bash "$new_username" || return 1
 
 	echo "導入公鑰範例："
