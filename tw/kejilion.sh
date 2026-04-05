@@ -47,12 +47,16 @@ run_command() {
 canshu_v6() {
 	if grep -q '^canshu="V6"' /usr/local/bin/k > /dev/null 2>&1; then
 		sed -i 's/^canshu="default"/canshu="V6"/' ~/kejilion.sh
+	elif grep -q '^canshu="V6"' ~/kejilion.sh.bak > /dev/null 2>&1; then
+		sed -i 's/^canshu="default"/canshu="V6"/' ~/kejilion.sh
 	fi
 }
 
 
 CheckFirstRun_true() {
 	if grep -q '^permission_granted="true"' /usr/local/bin/k > /dev/null 2>&1; then
+		sed -i 's/^permission_granted="false"/permission_granted="true"/' ~/kejilion.sh
+	elif grep -q '^permission_granted="true"' ~/kejilion.sh.bak > /dev/null 2>&1; then
 		sed -i 's/^permission_granted="false"/permission_granted="true"/' ~/kejilion.sh
 	fi
 }
@@ -87,6 +91,8 @@ send_stats() {
 yinsiyuanquan2() {
 
 if grep -q '^ENABLE_STATS="false"' /usr/local/bin/k > /dev/null 2>&1; then
+	sed -i 's/^ENABLE_STATS="true"/ENABLE_STATS="false"/' ~/kejilion.sh
+elif grep -q '^ENABLE_STATS="false"' ~/kejilion.sh.bak > /dev/null 2>&1; then
 	sed -i 's/^ENABLE_STATS="true"/ENABLE_STATS="false"/' ~/kejilion.sh
 fi
 
@@ -3694,11 +3700,11 @@ stream_panel() {
 				;;
 			5)
 				send_stats "編輯轉送配置"
-				read -e -p "请输入你要编辑的服务名: " stream_name
+				read -e -p "請輸入你要編輯的服務名稱:" stream_name
 				install nano
 				nano /home/web/stream.d/$stream_name.conf
 				docker restart nginx
-				send_stats "修改四层代理"
+				send_stats "修改四層代理"
 				;;
 			6)
 				send_stats "刪除轉送配置"
@@ -3724,8 +3730,8 @@ ldnmp_Proxy_backend_stream() {
 	send_stats "安裝$webname"
 	echo "開始部署$webname"
 
-	# 获取代理名称
-	read -erp "请输入代理转发名称 (如 mysql_proxy): " proxy_name
+	# 取得代理名稱
+	read -erp "請輸入代理轉發名稱 (如 mysql_proxy):" proxy_name
 	if [ -z "$proxy_name" ]; then
 		echo "名稱不能為空"; return 1
 	fi
@@ -3884,7 +3890,7 @@ ldnmp_web_status() {
 			2)
 				send_stats "克隆站點域名"
 				read -e -p "請輸入舊網域名稱:" oddyuming
-				read -e -p "請輸入新網域:" yuming
+				read -e -p "請輸入新網域名稱:" yuming
 				install_certbot
 				install_ssltls
 				certs_status
@@ -3925,7 +3931,7 @@ ldnmp_web_status() {
 				send_stats "建立關聯站點"
 				echo -e "為現有的站點再關聯一個新網域用於訪問"
 				read -e -p "請輸入現有的網域名稱:" oddyuming
-				read -e -p "請輸入新網域:" yuming
+				read -e -p "請輸入新網域名稱:" yuming
 				install_certbot
 				install_ssltls
 				certs_status
@@ -4078,8 +4084,8 @@ donlond_frp() {
 
 generate_frps_config() {
 
-	send_stats "安装frp服务端"
-	# 生成随机端口和凭证
+	send_stats "安裝frp服務端"
+	# 產生隨機連接埠和憑證
 	local bind_port=8055
 	local dashboard_port=8056
 	local token=$(openssl rand -hex 16)
@@ -4779,7 +4785,7 @@ mkdir -p /etc/sysctl.d
 echo "net.core.default_qdisc=fq" > "$CONF"
 echo "net.ipv4.tcp_congestion_control=bbr" >> "$CONF"
 
-# 清理可能導致衝突的舊版 sysctl.conf 殘留
+# 清理可能導致衝突的舊版本 sysctl.conf 殘留
 sed -i '/net.ipv4.tcp_congestion_control/d' /etc/sysctl.conf 2>/dev/null
 sed -i '/net.core.default_qdisc/d' /etc/sysctl.conf 2>/dev/null
 
@@ -5037,7 +5043,7 @@ fetch_remote_ssh_keys() {
 		return 1
 	fi
 
-	# 检查内容是否有效
+	# 檢查內容是否有效
 	if [[ ! -s "${temp_file}" ]]; then
 		echo "錯誤：下載到的檔案為空，URL 可能不包含任何公鑰" >&2
 		rm -f "${temp_file}"
@@ -5209,7 +5215,7 @@ add_sshpasswd() {
 	# 回車不輸入，預設 root
 	target_user=${target_user:-root}
 
-	# 校验用户是否存在
+	# 校驗用戶是否存在
 	if ! id "$target_user" >/dev/null 2>&1; then
 		echo "錯誤：用戶$target_user不存在"
 		return 1
@@ -6334,21 +6340,21 @@ Kernel_optimize() {
 			  cd ~
 			  clear
 			  _kernel_optimize_core "遊戲服優化模式" "game"
-			  send_stats "游戏服优化"
+			  send_stats "遊戲服優化"
 			  ;;
 		  6)
 			  cd ~
 			  clear
 			  restore_defaults
 			  curl -sS ${gh_proxy}raw.githubusercontent.com/kejilion/sh/refs/heads/main/network-optimize.sh -o /tmp/network-optimize.sh && source /tmp/network-optimize.sh && restore_network_defaults
-			  send_stats "还原默认设置"
+			  send_stats "還原預設設定"
 			  ;;
 
 		  7)
 			  cd ~
 			  clear
 			  curl -sS ${gh_proxy}raw.githubusercontent.com/kejilion/sh/refs/heads/main/network-optimize.sh | bash
-			  send_stats "内核自动调优"
+			  send_stats "核心自動調優"
 			  ;;
 
 		  *)
@@ -6378,7 +6384,7 @@ update_locale() {
 				locale-gen
 				echo "LANG=${lang}" > /etc/default/locale
 				export LANG=${lang}
-				echo -e "${gl_lv}系統語言已經修改為:$lang 重新连接SSH生效。${gl_bai}"
+				echo -e "${gl_lv}系統語言已經修改為:$lang重新連線SSH生效。${gl_bai}"
 				hash -r
 				break_end
 
@@ -6387,17 +6393,17 @@ update_locale() {
 				install glibc-langpack-zh
 				localectl set-locale LANG=${lang}
 				echo "LANG=${lang}" | tee /etc/locale.conf
-				echo -e "${gl_lv}系統語言已經修改為:$lang 重新连接SSH生效。${gl_bai}"
+				echo -e "${gl_lv}系統語言已經修改為:$lang重新連線SSH生效。${gl_bai}"
 				hash -r
 				break_end
 				;;
 			*)
-				echo "不支持的系统: $ID"
+				echo "不支援的系統:$ID"
 				break_end
 				;;
 		esac
 	else
-		echo "不支持的系统，无法识别系统类型。"
+		echo "不支援的系統，無法辨識系統類型。"
 		break_end
 	fi
 }
@@ -6910,7 +6916,7 @@ add_connection() {
 	send_stats "新增連接"
 	echo "建立新連接範例："
 	echo "- 連線名稱: my_server"
-	echo "  - IP地址: 192.168.1.100"
+	echo "- IP位址: 192.168.1.100"
 	echo "- 使用者名稱: root"
 	echo "- 連接埠: 22"
 	echo "------------------------"
@@ -6930,7 +6936,7 @@ add_connection() {
 # 刪除連接
 delete_connection() {
 	send_stats "刪除連接"
-	read -e -p "请输入要删除的连接编号: " num
+	read -e -p "請輸入要刪除的連接編號:" num
 
 	local connection=$(sed -n "${num}p" "$CONFIG_FILE")
 	if [[ -z "$connection" ]]; then
@@ -7011,7 +7017,7 @@ ssh_manager() {
 	while true; do
 		clear
 		echo "SSH 遠端連線工具"
-		echo "可以通过SSH连接到其他Linux系统上"
+		echo "可以透過SSH連接到其他Linux系統上"
 		echo "------------------------"
 		list_connections
 		echo "1. 建立新連接 2. 使用連接 3. 刪除連接"
@@ -7091,7 +7097,7 @@ mount_partition() {
 		return 1
 	fi
 
-	echo "分割區已成功掛載到$MOUNT_POINT"
+	echo "分區已成功掛載到$MOUNT_POINT"
 
 	# 檢查 /etc/fstab 是否已經存在 UUID 或掛載點
 	if grep -qE "UUID=$UUID|[[:space:]]$MOUNT_POINT[[:space:]]" /etc/fstab; then
@@ -7099,10 +7105,10 @@ mount_partition() {
 		return 0
 	fi
 
-	# 写入 /etc/fstab
+	# 寫入 /etc/fstab
 	echo "UUID=$UUID $MOUNT_POINT $FSTYPE defaults,nofail 0 2" >> /etc/fstab
 
-	echo "已写入 /etc/fstab，实现持久化挂载"
+	echo "已寫入 /etc/fstab，實現持久化掛載"
 }
 
 
@@ -8271,7 +8277,7 @@ docker_ssh_migration() {
 			echo -e "1. 備份docker項目"
 			echo -e "2. 遷移docker項目"
 			echo -e "3. 還原docker項目"
-			echo -e "4. 删除docker项目的备份文件"
+			echo -e "4. 刪除docker專案的備份文件"
 			echo "------------------------"
 			echo -e "0. 返回上一級選單"
 			echo "------------------------"
@@ -8785,7 +8791,7 @@ linux_Oracle() {
 	  case $sub_choice in
 		  1)
 			  clear
-			  echo "活跃脚本: CPU占用10-20% 内存占用20% "
+			  echo "活躍腳本: CPU佔用10-20% 記憶體佔用20%"
 			  read -e -p "確定安裝嗎？ (Y/N):" choice
 			  case "$choice" in
 				[Yy])
@@ -9659,7 +9665,7 @@ linux_ldnmp() {
 	  # find "$(realpath .)" -name "index.html" -print
 	  find "$(realpath .)" -name "index.html" -print | xargs -I {} dirname {}
 
-	  read -e -p "请输入index.html的路径，类似（/home/web/html/$yuming/index/）： " index_lujing
+	  read -e -p "請輸入index.html的路徑，類似（/home/web/html/$yuming/index/）： " index_lujing
 
 	  sed -i "s#root /var/www/html/$yuming/#root $index_lujing#g" /home/web/conf.d/$yuming.conf
 	  sed -i "s#/home/web/#/var/www/#g" /home/web/conf.d/$yuming.conf
@@ -9987,7 +9993,7 @@ moltbot_menu() {
 			return 1
 		fi
 
-		# 加上 --no-update-notifier，并确保错误重定向位置正确
+		# 加上 --no-update-notifier，並確保錯誤重定向位置正確
 		local_version=$(npm list -g openclaw --depth=0 --no-update-notifier 2>/dev/null | grep openclaw | awk '{print $NF}' | sed 's/^.*@//')
 
 		if [ -z "$local_version" ]; then
@@ -10003,7 +10009,7 @@ moltbot_menu() {
 		if [ "$local_version" != "$remote_version" ]; then
 			echo "${gl_huang}偵測到新版本:$remote_version${gl_bai}"
 		else
-			echo "${gl_lv}当前版本已是最新:$local_version${gl_bai}"
+			echo "${gl_lv}目前版本已是最新:$local_version${gl_bai}"
 		fi
 	}
 
@@ -10533,7 +10539,7 @@ PY
 
 
 	# OpenClaw API 協定偵測邏輯已移除：不再自動偵測/判定 API 類型。
-	# 說明：API 類型由使用者明確配置（models.providers.<name>.api），腳本不再嘗試呼叫 /responses 做推論。
+	# 说明：API 类型由用户显式配置（models.providers.<name>.api），脚本不再尝试调用 /responses 做推断。
 
 	# 建構模型配置 JSON
 	build-openclaw-provider-models-json() {
@@ -10771,7 +10777,7 @@ EOF
 			echo "🎯 使用第一個模型:$default_model"
 		elif [[ "$input_model" =~ ^[0-9]+$ ]] && [ "${#model_list[@]}" -gt 0 ] && [ "$input_model" -ge 1 ] && [ "$input_model" -le "${#model_list[@]}" ]; then
 			default_model="${model_list[$((input_model-1))]}"
-			echo "🎯 已選擇模型:$default_model"
+			echo "🎯 已选择模型: $default_model"
 		else
 			default_model="$input_model"
 		fi
@@ -10832,7 +10838,7 @@ openclaw_api_manage_list() {
 					unchecked) latency_color="$gl_bai" ;;
 				esac
 
-				printf '%b\n' "[$idx] ${name} | API: ${base_url}| 協議:${api_type}| 模型數量:${gl_huang}${model_count}${gl_bai}| 延遲/狀態:${latency_color}${latency_txt}${gl_bai}"
+				printf '%b\n' "[$idx] ${name} | API: ${base_url}| 協議:${api_type}| 模型數量:${gl_huang}${model_count}${gl_bai} | 延迟/状态: ${latency_color}${latency_txt}${gl_bai}"
 				;;
 		esac
 	done < <(python3 - "$config_file" <<-'PY'
@@ -11161,7 +11167,7 @@ PY2
 			echo "❌ 同步失敗：provider 不存在或未配置"
 			;;
 		3)
-			echo "❌ 同步失败：provider 配置不完整或类型不支持"
+			echo "❌ 同步失敗：provider 配置不完整或類型不支持"
 			;;
 		4)
 			echo "❌ 同步失敗：上游 /models 請求失敗"
@@ -11256,7 +11262,7 @@ PY
 			start_gateway
 			;;
 		2)
-			echo "❌ 切換失敗：provider 不存在或未配置"
+			echo "❌ 切换失败：provider 不存在或未配置"
 			;;
 		3)
 			echo "❌ 切換失敗：協定值非法"
@@ -11370,7 +11376,7 @@ replacement = replacement_candidates[0] if replacement_candidates else None
 primary_ref = get_primary_ref(defaults)
 if ref_provider(primary_ref) == name:
     if not replacement:
-        print('❌ 删除中止：默认主模型指向该 provider，且无可用替代模型')
+        print('❌ 刪除中止：預設主模型指向該 provider，且無可用替代模型')
         raise SystemExit(3)
     set_primary_ref(defaults, replacement)
     print(f'🔁 預設主模型切換: {primary_ref} -> {replacement}')
@@ -11400,7 +11406,7 @@ PY
 		local rc=$?
 		case "$rc" in
 			0)
-				send_stats "OpenClaw API刪除確認"
+				send_stats "OpenClaw API删除确认"
 				echo "✅ 刪除完成"
 				start_gateway
 				;;
@@ -11412,7 +11418,7 @@ PY
 				echo "❌ 刪除失敗：無可用替代模型，已保持原始配置"
 				;;
 			*)
-				echo "❌ 刪除失敗：請檢查設定檔結構或日誌輸出"
+				echo "❌ 删除失败：请检查配置文件结构或日志输出"
 				;;
 		esac
 
@@ -12173,12 +12179,12 @@ PYTHON_EOF
 				[ -z "$plugin_id" ] && continue
 
 				if [ "$plugin_action" = "1" ]; then
-					echo "🔍 正在检查插件状态: $plugin_id"
+					echo "🔍 正在檢查插件狀態:$plugin_id"
 					local plugin_list
 					plugin_list=$(openclaw plugins list 2>/dev/null)
 
 					if echo "$plugin_list" | grep -qw "$plugin_id" && echo "$plugin_list" | grep "$plugin_id" | grep -q "disabled"; then
-						echo "💡 插件 [$plugin_id] 已预装，正在激活..."
+						echo "💡 插件 [$plugin_id] 已預先安裝，正在啟動..."
 						if openclaw plugins enable "$plugin_id"; then
 							sync_openclaw_plugin_allowlist "$plugin_id"
 							success_list="$success_list $plugin_id"
@@ -12276,7 +12282,7 @@ PYTHON_EOF
 			echo "----------------------------------------"
 
 			echo "1) 安裝技能"
-			echo "2) 删除技能"
+			echo "2) 刪除技能"
 			echo "0) 返回"
 			read -e -p "請選擇操作：" skill_action
 
@@ -12895,7 +12901,7 @@ if os.path.isdir(agents_root):
 		fi
 
 		if ! find "$tmp_payload" -mindepth 1 -print -quit | grep -q .; then
-			echo "❌ 未找到可備份的 OpenClaw 專案內容"
+			echo "❌ 未找到可备份的 OpenClaw 项目内容"
 			rm -rf "$tmp_payload"
 			break_end
 			return 1
@@ -12910,7 +12916,7 @@ if os.path.isdir(agents_root):
 			echo "✅ OpenClaw 專案備份完成 (${mode_label}): $out_file"
 			openclaw_offer_transfer_hint "$out_file"
 		else
-			echo "❌ OpenClaw 專案備份失敗"
+			echo "❌ OpenClaw 项目备份失败"
 		fi
 
 		rm -rf "$tmp_payload"
@@ -13119,7 +13125,7 @@ if os.path.isdir(agents_root):
 		fi
 
 		if [ ! -f "$target_path" ]; then
-			echo "❌ 目标文件不存在: $target_path"
+			echo "❌ 目標檔案不存在:$target_path"
 			break_end
 			return 1
 		fi
@@ -13354,7 +13360,7 @@ EOF
 		local count=0
 		local agent_lines agent_id workspace
 		agent_lines=$(openclaw_memory_list_agents)
-		echo "檢查並準備 $(printf '%s\n'"$agent_lines"| sed '/^\s*$/d' | wc -l | tr -d ' ') 個智能體工作區"
+		echo "檢查並準備 $(printf '%s\n'"$agent_lines" | sed '/^\s*$/d' | wc -l | tr -d ' ') 个智能体工作区"
 		while IFS=$'\t' read -r agent_id workspace; do
 			[ -z "$agent_id" ] && continue
 			openclaw_memory_prepare_workspace "$agent_id"
@@ -13366,27 +13372,60 @@ EOF
 	}
 
 	openclaw_memory_render_status() {
-		local agent_lines agent_id workspace status_output status_lines first="true"
-		agent_lines=$(openclaw_memory_list_agents)
-		while IFS=$'\t' read -r agent_id workspace; do
-			[ -z "$agent_id" ] && continue
-			status_output=$(openclaw memory status --agent "$agent_id" 2>/dev/null)
-			[ "$first" = "true" ] || echo ""
-			first="false"
-			echo "Agent: $agent_id"
-			if [ $? -ne 0 ] || [ -z "$status_output" ]; then
-				echo "獲取狀態失敗"
-				continue
-			fi
-			status_lines=$(echo "$status_output" | grep -E "^(Provider|Vector|Indexed|Workspace|Store)" | head -n 5 | sed -e 's/^Provider: /底層方案: /' -e 's/^Vector: /向量庫狀態: /' -e 's/^Indexed: /已收錄文件: /' -e 's/^Workspace: /工作區: /' -e 's/^Store: /索引庫: /')
-			if [ -z "$status_lines" ]; then
-				echo "未安裝/未啟動"
-			else
-				echo "$status_lines"
-			fi
-		done <<EOF
-$agent_lines
-EOF
+		local json_output
+		json_output=$(openclaw memory status --json 2>/dev/null)
+		if [ -z "$json_output" ]; then
+			echo "取得記憶狀態失敗（openclaw memory status --json 無輸出）"
+			return 1
+		fi
+		python3 - "$json_output" <<'PY'
+import json, sys
+raw = sys.argv[1]
+try:
+    data = json.loads(raw)
+except Exception:
+    print("取得記憶狀態失敗（JSON 解析錯誤）")
+    raise SystemExit(1)
+if not isinstance(data, list) or len(data) == 0:
+    print("未檢測到任何智能體記憶狀態。")
+    raise SystemExit(0)
+first = True
+for entry in data:
+    if not isinstance(entry, dict):
+        continue
+    agent_id = entry.get("agentId", "?")
+    s = entry.get("status", {})
+    if not isinstance(s, dict):
+        s = {}
+    if not first:
+        print("")
+    first = False
+    print("Agent: %s" % agent_id)
+    backend = s.get("backend") or s.get("provider") or "-"
+    print("底層方案: %s" % backend)
+    files = s.get("files", 0)
+    chunks = s.get("chunks", 0)
+    print("已收錄: %s 檔案 / %s 區塊" % (files, chunks))
+    dirty = s.get("dirty")
+    dirty_str = "是" if dirty else "否"
+    print("待刷新: %s" % dirty_str)
+    vec = s.get("vector", {})
+    if isinstance(vec, dict) and vec.get("enabled"):
+        vec_str = "就緒" if vec.get("available") else "已啟用(不可用)"
+    else:
+        vec_str = "未啟用"
+    print("向量庫: %s" % vec_str)
+    ws = s.get("workspaceDir") or "-"
+    print("工作區: %s" % ws)
+    db = s.get("dbPath") or "-"
+    print("索引庫: %s" % db)
+    scan = entry.get("scan", {})
+    if isinstance(scan, dict):
+        issues = scan.get("issues", [])
+        if issues:
+            for issue in issues[:3]:
+                print("  ⚠️ %s" % issue)
+PY
 	}
 
 	openclaw_memory_get_backend() {
@@ -13724,13 +13763,13 @@ EOF
 			echo "✅ memory.backend 已是 qmd"
 		else
 			openclaw_memory_config_set "memory.backend" "qmd"
-			echo "✅ 已设置 memory.backend=qmd"
+			echo "✅ 已設定 memory.backend=qmd"
 		fi
 		local qmd_cmd
 		qmd_cmd=$(openclaw_memory_config_get "memory.qmd.command")
 		if [ -z "$qmd_cmd" ] || [[ "$qmd_cmd" != /* ]] || [ "$qmd_cmd" != "$OPENCLAW_MEMORY_QMD_PATH" ]; then
 			openclaw_memory_config_set "memory.qmd.command" "$OPENCLAW_MEMORY_QMD_PATH"
-			echo "✅ 已寫入 memory.qmd.command:$OPENCLAW_MEMORY_QMD_PATH"
+			echo "✅ 已写入 memory.qmd.command: $OPENCLAW_MEMORY_QMD_PATH"
 		else
 			echo "✅ memory.qmd.command 已正確"
 		fi
@@ -13832,7 +13871,7 @@ EOF
 			qmd)
 				scheme_label="QMD"
 				OPENCLAW_MEMORY_EXPECT_PATH="$HOME/.bun (qmd 安裝目錄)"
-				OPENCLAW_MEMORY_EXPECT_SIZE="約 20-50MB"
+				OPENCLAW_MEMORY_EXPECT_SIZE="约 20-50MB"
 				;;
 			local)
 				scheme_label="Local"
@@ -13978,7 +14017,7 @@ EOF
 			fi
 		else
 			echo "includeDefaultMemory 配置正常。"
-			echo "將執行：清理舊索引 → 全量重建所有智能體索引"
+			echo "将执行：清理旧索引 → 全量重建所有智能体索引"
 			echo ""
 			read -e -p "確認執行？ (Y/n):" confirm_fix
 			if [[ ! "$confirm_fix" =~ ^[Nn]$ ]]; then
@@ -14011,7 +14050,7 @@ EOF
 			echo "---------------------------------------"
 			echo "1. 切換 QMD（自動部署/已安裝則跳過）"
 			echo "2. 切換 Local（自動部署/已安裝則跳過）"
-			echo "3. Auto（自動推薦並自動部署）"
+			echo "3. Auto（自动推荐并自动部署）"
 			echo "0. 返回上一級"
 			echo "---------------------------------------"
 			read -e -p "請輸入你的選擇:" scheme_choice
@@ -14162,25 +14201,43 @@ EOF
 			done
 	}
 
+
+	openclaw_memory_search_test() {
+		read -e -p "輸入搜尋關鍵字:" query
+		if [ -z "$query" ]; then
+			echo "關鍵字不能為空。"
+			return 1
+		fi
+		echo "正在搜尋記憶..."
+		openclaw memory search "$query" --max-results 5
+	}
+
+	openclaw_memory_deep_status() {
+		echo "正在探測嵌入模型就緒狀態..."
+		openclaw memory status --deep
+	}
+
 	openclaw_memory_menu() {
-		send_stats "OpenClaw记忆管理"
+		send_stats "OpenClaw記憶管理"
 		while true; do
 			clear
 			echo "======================================="
-			echo "OpenClaw 记忆管理"
+			echo "OpenClaw 記憶管理"
 			echo "======================================="
 			openclaw_memory_render_status
 			echo "1. 更新記憶索引"
 			echo "2. 檢視記憶文件"
 			echo "3. 索引修復（Indexed 異常）"
 			echo "4. 記憶方案（QMD/Local/Auto）"
+			echo "5. 搜尋測試（驗證索引是否運作）"
+			echo "6. 深度狀態探測（檢查嵌入模型）"
 			echo "0. 返回上一級"
 			echo "---------------------------------------"
 			read -e -p "請輸入你的選擇:" memory_choice
 			case "$memory_choice" in
 				1)
 					echo "即將更新記憶索引。"
-					read -e -p "第一次確認：輸入 yes 繼續:" confirm_step1
+					read -e -p "第一次确认：输入 yes 继续: " confirm_step1
 					if [ "$confirm_step1" != "yes" ]; then
 						echo "已取消。"
 						break_end
@@ -14220,6 +14277,14 @@ EOF
 				4)
 					openclaw_memory_scheme_menu
 					;;
+				5)
+					openclaw_memory_search_test
+					break_end
+					;;
+				6)
+					openclaw_memory_deep_status
+					break_end
+					;;
 				0)
 					return 0
 					;;
@@ -14243,7 +14308,7 @@ EOF
 
 	openclaw_permission_require_openclaw() {
 		if ! openclaw_has_command openclaw; then
-			echo "❌ 未偵測到 openclaw 指令，請先安裝或初始化 OpenClaw。"
+			echo "❌ 未检测到 openclaw 命令，请先安装或初始化 OpenClaw。"
 			return 1
 		fi
 		return 0
@@ -14285,7 +14350,7 @@ EOF
 
 	openclaw_permission_restart_gateway() {
 		if ! openclaw_has_command openclaw; then
-			echo "❌ 未偵測到 openclaw，無法重新啟動 OpenClaw Gateway。"
+			echo "❌ 未检测到 openclaw，无法重启 OpenClaw Gateway。"
 			return 1
 		fi
 		echo "正在重啟 OpenClaw Gateway..."
@@ -14405,7 +14470,7 @@ try:
     elif p == "coding" and s == "allowlist" and a == "on-miss" and e == "true" and b == "true" and ap == "true" and w == "true":
         print("開發增強模式")
     elif (p == "full" or p == "(unset)") and s == "full" and a == "off" and e == "true" and b == "true" and ap == "true":
-        print("完全開放模式")
+        print("完全开放模式")
     else:
         print("自訂模式")
 except Exception:
@@ -14421,75 +14486,111 @@ PY
 		
 		mkdir -p "$HOME/.openclaw"
 		
-		# 使用 Python 安全性更新或建立 exec-approvals.json
-		python3 -c "
+		# 生成 JSON 并通过 openclaw approvals set --stdin 写入（优先）
+		# 若 CLI 不支援則回退直接寫文件
+		local json_payload
+		json_payload=$(python3 -c '
 import json, sys, os
 path = sys.argv[1]
 try:
     if os.path.exists(path):
-        with open(path, 'r') as f:
+        with open(path, "r") as f:
             data = json.load(f)
     else:
-        data = {'version': 1, 'defaults': {}}
+        data = {"version": 1, "defaults": {}}
 except Exception:
-    data = {'version': 1, 'defaults': {}}
-
-if 'defaults' not in data:
-    data['defaults'] = {}
-
-data['defaults']['security'] = sys.argv[2]
-data['defaults']['ask'] = sys.argv[3]
-data['defaults']['askFallback'] = sys.argv[4]
-data['defaults']['autoAllowSkills'] = True
-
-with open(path, 'w') as f:
-    json.dump(data, f, indent=2)
-" "$approvals_file" "$sec" "$ask" "$fallback"
+    data = {"version": 1, "defaults": {}}
+if "defaults" not in data:
+    data["defaults"] = {}
+data["defaults"]["security"] = sys.argv[2]
+data["defaults"]["ask"] = sys.argv[3]
+data["defaults"]["askFallback"] = sys.argv[4]
+data["defaults"]["autoAllowSkills"] = True
+print(json.dumps(data, indent=2))
+' "$approvals_file" "$sec" "$ask" "$fallback")
+		
+		if openclaw_has_command openclaw && echo "$json_payload" | openclaw approvals set --stdin >/dev/null 2>&1; then
+			return 0
+		fi
+		# 回退：直接寫文件
+		echo "$json_payload" > "$approvals_file"
 	}
 
 	openclaw_permission_render_status() {
 		echo "應用層配置: ~/.openclaw/openclaw.json"
 		echo "宿主機核准: ~/.openclaw/exec-approvals.json"
 		echo "---------------------------------------"
-		local current_profile=$(openclaw config get tools.profile 2>/dev/null)
-		local sec_val
-		if [ -f "$HOME/.openclaw/exec-approvals.json" ]; then
-			sec_val=$(python3 -c "import json, sys; print(json.load(open('$HOME/.openclaw/exec-approvals.json')).get('defaults', {}).get('security', 'unset'))" 2>/dev/null || echo "unset")
-		else
-			sec_val="unset"
-		fi
+		local current_profile current_sec current_ask current_elevated
+		current_profile=$(openclaw config get tools.profile 2>/dev/null | head -n 1 | sed 's/^"//;s/"$//')
+		current_sec=$(openclaw config get tools.exec.security 2>/dev/null | head -n 1 | sed 's/^"//;s/"$//')
+		current_ask=$(openclaw config get tools.exec.ask 2>/dev/null | head -n 1 | sed 's/^"//;s/"$//')
+		current_elevated=$(openclaw config get tools.elevated.enabled 2>/dev/null | head -n 1 | sed 's/^"//;s/"$//')
+		# 清理空值
+		[ -z "$current_profile" ] || echo "$current_profile" | grep -qi "config path not found" && current_profile=""
+		[ -z "$current_sec" ] || echo "$current_sec" | grep -qi "config path not found" && current_sec=""
+		[ -z "$current_ask" ] || echo "$current_ask" | grep -qi "config path not found" && current_ask=""
+		[ -z "$current_elevated" ] || echo "$current_elevated" | grep -qi "config path not found" && current_elevated=""
 
 		local current_mode="未知 / 自訂"
-		if [ "$current_profile" = "coding" ] && [ "$sec_val" = "allowlist" ]; then
-			current_mode="\033[1;32m標準安全模式\033[0m"
-		elif [ "$current_profile" = "full" ] && [ "$sec_val" = "full" ]; then
+		if [ "$current_profile" = "full" ] && [ "$current_sec" = "full" ] && [ "$current_ask" = "off" ]; then
 			current_mode="\033[1;31m完全開放模式\033[0m"
-		elif [ "$current_profile" = "coding" ] && [ "$sec_val" = "full" ]; then
+		elif [ "$current_profile" = "coding" ] && [ "$current_sec" = "allowlist" ] && [ "$current_ask" = "on-miss" ] && [ "$current_elevated" = "true" ]; then
 			current_mode="\033[1;33m開發增強模式\033[0m"
-		elif [ -z "$current_profile" ] && [ "$sec_val" = "unset" ]; then
+		elif [ "$current_profile" = "coding" ] && [ "$current_sec" = "allowlist" ] && [ "$current_ask" = "on-miss" ]; then
+			current_mode="\033[1;32m標準安全模式\033[0m"
+		elif [ -z "$current_profile" ] && [ -z "$current_sec" ]; then
 			current_mode="\033[1;36m官方沙盒兜底\033[0m"
 		fi
 		echo -e "當前綜合安全等級:${current_mode}"
 		echo "---------------------------------------"
 		echo -e "${gl_huang}[應用層 Tool Policy 狀態]${gl_bai}"
-		openclaw config get tools.profile 2>/dev/null | sed 's/^/ Profile (預設): /' || echo "  Profile: (unset)"
-		openclaw config get tools.exec.security 2>/dev/null | sed 's/^/ Exec 限制: /' || echo "Exec 限制: (unset)"
-		openclaw config get tools.exec.ask 2>/dev/null | sed 's/^/ 審核提示: /' || echo "審核提示: (unset)"
-		openclaw config get tools.elevated.enabled 2>/dev/null | sed 's/^/ 提權開關: /' || echo "提權開關: (unset)"
+		echo "Profile (預設): ${current_profile:-(unset)}"
+		echo "  Exec 限制: ${current_sec:-(unset)}"
+		echo "審核提示: ${current_ask:-(unset)}"
+		echo "提權開關: ${current_elevated:-(unset)}"
 		
 		echo -e "\n${gl_huang}[底層 Exec Approvals 狀態]${gl_bai}"
-		if [ -f "$HOME/.openclaw/exec-approvals.json" ]; then
-			python3 -c "
+		if openclaw_has_command openclaw; then
+			local approvals_json
+			approvals_json=$(openclaw approvals get --json 2>/dev/null)
+			if [ -n "$approvals_json" ]; then
+				python3 -c '
 import json, sys
 try:
-    with open('$HOME/.openclaw/exec-approvals.json') as f:
-        d = json.load(f).get('defaults', {})
-        print('攔截策略 (Security):' + str(d.get('security', '(unset)')))
-        print('提示策略 (Ask):' + str(d.get('ask', '(unset)')))
-        print('無UI兜底 (AskFallback):' + str(d.get('askFallback', '(unset)')))
+    d = json.loads(sys.argv[1])
+    defaults = d.get("file", {}).get("defaults", {})
+    if not defaults:
+        defaults = d.get("defaults", {})
+    sec = defaults.get("security", "(unset)")
+    ask = defaults.get("ask", "(unset)")
+    fb = defaults.get("askFallback", "(unset)")
+    auto = defaults.get("autoAllowSkills", False)
+    print("攔截策略 (Security):" + str(sec))
+    print("提示策略 (Ask):" + str(ask))
+    print("無UI兜底 (AskFallback):" + str(fb))
+    print("自動放行技能 (autoAllowSkills):" + ("on" if auto else "off"))
+    exists = d.get("exists", True)
+    if not exists:
+        print("(審核文件不存在，使用系統內建安全兜底)")
+except Exception as e:
+    print("(解析失敗:" + str(e) + ")")
+' "$approvals_json"
+			else
+				echo "(openclaw approvals get --json 無輸出)"
+			fi
+		elif [ -f "$HOME/.openclaw/exec-approvals.json" ]; then
+			python3 -c '
+import json, os
+path = os.path.expanduser("~/.openclaw/exec-approvals.json")
+try:
+    with open(path) as f:
+        d = json.load(f).get("defaults", {})
+    print("攔截策略 (Security):" + str(d.get("security", "(unset)")))
+    print("提示策略 (Ask):" + str(d.get("ask", "(unset)")))
+    print("無UI兜底 (AskFallback):" + str(d.get("askFallback", "(unset)")))
 except Exception:
-    print('(設定檔解析失敗)')
-"
+    print("(設定檔解析失敗)")
+'
 		else
 			echo "(未配置，強制使用系統內建安全兜底策略)"
 		fi
@@ -14548,11 +14649,11 @@ except Exception:
 		openclaw_permission_update_exec_approvals "full" "off" "full"
 		
 		openclaw_permission_restart_gateway
-		echo -e "${gl_lv}✅ 已切換為完全開放模式 (警告：所有宿主機指令攔截已失效，智能體具有最高權限)${gl_bai}"
+		echo -e "${gl_lv}✅ 已切换为完全开放模式 (警告：所有宿主机命令拦截已失效，智能体具有最高权限)${gl_bai}"
 	}
 
 	openclaw_permission_restore_official_defaults() {
-		send_stats "OpenClaw權限-恢復官方默認"
+		send_stats "OpenClaw权限-恢复官方默认"
 		openclaw_permission_require_openclaw || return 1
 		
 		echo "清理應用層強制覆蓋..."
@@ -14563,7 +14664,12 @@ except Exception:
 		openclaw config unset tools.exec.strictInlineEval >/dev/null 2>&1
 		
 		echo "清理宿主機攔截配置..."
-		rm -f "$HOME/.openclaw/exec-approvals.json"
+		# 優先透過 CLI 清空審核配置，回退直接刪文件
+		if echo '{"version":1,"defaults":{}}' | openclaw approvals set --stdin >/dev/null 2>&1; then
+			true
+		else
+			rm -f "$HOME/.openclaw/exec-approvals.json"
+		fi
 		
 		openclaw_permission_restart_gateway
 		echo -e "${gl_lv}✅ 已恢復到 OpenClaw 官方安全沙盒防禦機制${gl_bai}"
@@ -14584,6 +14690,66 @@ except Exception:
 		read -n 1 -s
 	}
 
+
+	openclaw_permission_manage_allowlist() {
+		while true; do
+			clear
+			echo "======================================="
+			echo "Exec 指令白名單管理"
+			echo "======================================="
+			echo "当前白名单："
+			local allowlist_json
+			allowlist_json=$(openclaw approvals get --json 2>/dev/null)
+			if [ -n "$allowlist_json" ]; then
+				python3 -c '
+import json, sys
+try:
+    d = json.loads(sys.argv[1])
+    f = d.get("file", {})
+    agents = f.get("agents", {})
+    found = False
+    for agent_id, agent_data in agents.items():
+        al = agent_data.get("allowlist", [])
+        if al:
+            found = True
+            print("智能體 [%s]:" % agent_id)
+            for item in al:
+                print("    - %s" % item)
+    if not found:
+        print("(空，未配置任何白名單規則)")
+except Exception as e:
+    print("(解析失敗:" + str(e) + ")")
+' "$allowlist_json"
+			else
+				echo "  (无法获取)"
+			fi
+			echo "---------------------------------------"
+			echo "1. 新增白名單規則"
+			echo "2. 移除白名單規則"
+			echo "0. 返回"
+			echo "---------------------------------------"
+			read -e -p "請選擇:" al_choice
+			case "$al_choice" in
+				1)
+					read -e -p "輸入要放行的命令路徑 (支援 glob，如 /usr/bin/git):" pattern
+					[ -z "$pattern" ] && { echo "不能為空"; break_end; continue; }
+					read -e -p "指定智能體ID (留空=所有智能體 *):" agent_id
+					agent_id="${agent_id:-*}"
+					openclaw approvals allowlist add --agent "$agent_id" "$pattern"
+					break_end
+					;;
+				2)
+					read -e -p "輸入要移除的命令路徑:" pattern
+					[ -z "$pattern" ] && { echo "不能為空"; break_end; continue; }
+					openclaw approvals allowlist remove "$pattern"
+					break_end
+					;;
+				0) return 0 ;;
+				*) echo "無效選擇"; sleep 1 ;;
+			esac
+		done
+	}
+
 	openclaw_permission_menu() {
 		send_stats "OpenClaw權限管理"
 		while true; do
@@ -14595,9 +14761,10 @@ except Exception:
 			echo "---------------------------------------"
 			echo -e "${gl_kjlan}1.${gl_bai}切換為標準安全模式（日常推薦，彈卡核准）"
 			echo -e "${gl_kjlan}2.${gl_bai}切換為開發增強模式（允許智能體申請提權）"
-			echo -e "${gl_kjlan}3.${gl_bai}切換為完全開放模式（${gl_hong}高風險！徹底解除所有宿主機攔截${gl_bai}）"
-			echo -e "${gl_kjlan}4.${gl_bai}恢復官方預設沙盒防禦策略"
+			echo -e "${gl_kjlan}3.${gl_bai} 切换为完全开放模式（${gl_hong}高風險！徹底解除所有宿主機攔截${gl_bai}）"
+			echo -e "${gl_kjlan}4.${gl_bai} 恢复官方默认沙盒防御策略"
 			echo -e "${gl_kjlan}5.${gl_bai}運行底層安全審計與自動修復"
+			echo -e "${gl_kjlan}6.${gl_bai}管理 Exec 指令白名單"
 			echo -e "${gl_kjlan}0.${gl_bai}回上一級"
 			echo "---------------------------------------"
 			read -e -p "請輸入你的選擇:" perm_choice
@@ -14609,25 +14776,28 @@ except Exception:
 					break_end
 					;;
 				2)
-					echo "準備應用：開發增強模式"
+					echo "准备应用：开发增强模式"
 					read -e -p "輸入 yes 確認:" confirm
 					[ "$confirm" = "yes" ] && openclaw_permission_apply_developer || echo "已取消"
 					break_end
 					;;
 				3)
-					echo -e "${gl_hong}⚠️ 完全開放模式會徹底瓦解 exec 審核並自動放行高風險程式碼。${gl_bai}"
-					read -e -p "输入 FULL 确认继续: " confirm
+					echo -e "${gl_hong}⚠️ 完全开放模式会彻底瓦解 exec 审批并自动放行高危代码。${gl_bai}"
+					read -e -p "輸入 FULL 確認繼續:" confirm
 					[ "$confirm" = "FULL" ] && openclaw_permission_apply_full || echo "已取消"
 					break_end
 					;;
 				4)
-					echo "将清除所有定制覆盖，恢复 OpenClaw 刚安装时的严格沙盒状态。"
+					echo "將清除所有自訂覆蓋，恢復 OpenClaw 剛安裝時的嚴格沙盒狀態。"
 					read -e -p "輸入 yes 確認:" confirm
 					[ "$confirm" = "yes" ] && openclaw_permission_restore_official_defaults || echo "已取消"
 					break_end
 					;;
 				5)
 					openclaw_permission_run_audit
+					;;
+				6)
+					openclaw_permission_manage_allowlist
 					;;
 				0)
 					return 0
@@ -14705,6 +14875,15 @@ except Exception:
 	}
 
 	openclaw_multiagent_agents_json() {
+		local result
+		if openclaw_has_command openclaw; then
+			result=$(openclaw agents list --json 2>/dev/null)
+			if [ -n "$result" ] && python3 -c "import json,sys; json.loads(sys.argv[1])" "$result" 2>/dev/null; then
+				echo "$result"
+				return 0
+			fi
+		fi
+		# 回退：從設定檔讀取
 		local config_file
 		config_file=$(openclaw_permission_config_file)
 		if [ -s "$config_file" ]; then
@@ -14723,82 +14902,65 @@ except Exception:
 PY
 			return 0
 		fi
-		openclaw agents list --json 2>/dev/null || echo '[]'
+		echo '[]'
 	}
 
 	openclaw_multiagent_bindings_json() {
+		local result
+		if openclaw_has_command openclaw; then
+			result=$(openclaw agents bindings --json 2>/dev/null)
+			if [ -n "$result" ] && python3 -c "import json,sys; json.loads(sys.argv[1])" "$result" 2>/dev/null; then
+				echo "$result"
+				return 0
+			fi
+		fi
+		# 回退：從設定檔讀取
 		local config_file
 		config_file=$(openclaw_permission_config_file)
 		if [ -s "$config_file" ]; then
 			python3 - "$config_file" <<'PY'
-import json,sys,os
+import json,sys
 path=sys.argv[1]
-results=[]
-
-def add_item(item):
-    if not isinstance(item,dict):
-        return
-    bind=item.get("bind") or item.get("binding") or item.get("scope") or item.get("route")
-    agent=item.get("agentId") or item.get("agent")
-    if agent or bind:
-        results.append({"agentId": agent or "?", "bind": bind or "-"})
-
-def walk(obj):
-    if isinstance(obj,dict):
-        if "agentId" in obj and any(k in obj for k in ("bind","binding","scope","route")):
-            add_item(obj)
-        for v in obj.values():
-            walk(v)
-    elif isinstance(obj,list):
-        for v in obj:
-            walk(v)
-
 try:
     with open(path) as f:
         data=json.load(f)
-    bindings=data.get("agents",{}).get("bindings") if isinstance(data,dict) else None
-    if isinstance(bindings,list):
-        for item in bindings:
-            add_item(item)
-    walk(data)
+    bindings=data.get("agents",{}).get("bindings",[])
+    if not isinstance(bindings,list):
+        bindings=[]
+    results=[]
+    for item in bindings:
+        if not isinstance(item,dict):
+            continue
+        results.append({"agentId": item.get("agentId") or item.get("agent") or "?", "description": item.get("description") or "-"})
     print(json.dumps(results, ensure_ascii=False))
 except Exception:
     print("[]")
 PY
 			return 0
 		fi
-		openclaw agents bindings --json 2>/dev/null || echo '[]'
+		echo '[]'
 	}
 
 	openclaw_multiagent_sessions_json() {
-		local config_file
-		config_file=$(openclaw_permission_config_file)
-		python3 - "$config_file" <<'PY'
-import json,sys,os
-config_path=sys.argv[1] if len(sys.argv)>1 else ""
-
-def load_agents(path):
-    if path and os.path.exists(path):
-        try:
-            with open(path) as f:
-                data=json.load(f)
-            agents=data.get("agents",{}).get("list",[])
-            if isinstance(agents,list) and agents:
-                ids=[a.get("id") for a in agents if isinstance(a,dict) and a.get("id")]
-                if ids:
-                    return ids
-        except Exception:
-            pass
-    base=os.path.expanduser("~/.openclaw/agents")
-    try:
-        return [d for d in os.listdir(base) if os.path.isdir(os.path.join(base,d))]
-    except Exception:
-        return []
-
-agent_ids=load_agents(config_path)
+		local result
+		if openclaw_has_command openclaw; then
+			result=$(openclaw sessions --json 2>/dev/null | grep -v '^\[')
+			if [ -n "$result" ] && python3 -c "import json,sys; json.loads(sys.argv[1])" "$result" 2>/dev/null; then
+				echo "$result"
+				return 0
+			fi
+		fi
+		# 回退：從檔案系統讀取
+		python3 <<'PY'
+import json,os
+base=os.path.expanduser("~/.openclaw/agents")
 sessions=[]
-for agent_id in agent_ids:
-    path=os.path.expanduser(f"~/.openclaw/agents/{agent_id}/sessions/sessions.json")
+try:
+    agent_dirs=[d for d in os.listdir(base) if os.path.isdir(os.path.join(base,d))]
+except Exception:
+    agent_dirs=[]
+for agent_id in agent_dirs:
+    path=os.path.join(base,agent_id,"sessions","sessions.json")
     if not os.path.exists(path):
         continue
     try:
@@ -14809,19 +14971,15 @@ for agent_id in agent_ids:
     if isinstance(data,dict):
         items=data.items()
     elif isinstance(data,list):
-        items=[(item.get("key") or item.get("sessionKey") or "?", item) for item in data if isinstance(item,dict)]
+        items=[(item.get("key") or "?", item) for item in data if isinstance(item,dict)]
     else:
         continue
     for key,item in items:
         if not isinstance(item,dict):
             continue
-        model=item.get("model")
-        if not model:
-            report=item.get("systemPromptReport") or {}
-            if isinstance(report,dict):
-                model=report.get("model") or report.get("modelProvider") or report.get("provider")
-        sessions.append({"agentId": agent_id, "key": key, "model": model or "-"})
-print(json.dumps({"sessions": sessions}, ensure_ascii=False))
+        model=item.get("model") or "-"
+        sessions.append({"agentId": agent_id, "key": key, "model": model})
+print(json.dumps({"path":"(filesystem)","count":len(sessions),"sessions":sessions}, ensure_ascii=False))
 PY
 	}
 
@@ -14831,12 +14989,34 @@ PY
 		default_agent=$(openclaw_multiagent_default_agent)
 		echo "設定檔: ${config_file:-$(openclaw_permission_config_file)}"
 		echo "預設智能體:$default_agent"
-		python3 -c 'import json,sys; agents=json.loads(sys.argv[1] or "[]"); bindings=json.loads(sys.argv[2] or "[]"); obj=json.loads(sys.argv[3] or "{}"); sessions=obj.get("sessions",[]) if isinstance(obj,dict) else []; print("已配置智能體數: %s" % len(agents)); print("路由綁定數: %s" % len(bindings)); print("會話總數: %s" % len(sessions)); print("---------------------------------------");
-if not agents: print("目前未配置任何多智能體。")
+		python3 -c '
+import json,sys
+agents=json.loads(sys.argv[1] or "[]")
+bindings=json.loads(sys.argv[2] or "[]")
+sess_obj=json.loads(sys.argv[3] or "{}")
+sessions=sess_obj.get("sessions",[]) if isinstance(sess_obj,dict) else []
+print("已配置智能體數: %s" % len(agents))
+print("路由綁定數: %s" % len(bindings))
+print("會話總數: %s" % len(sessions))
+print("---------------------------------------")
+if not agents:
+    print("目前未配置任何多智能體。")
 else:
- import itertools
- for item in itertools.islice(agents, 8):
-  ident_obj=item.get("identity") if isinstance(item.get("identity"),dict) else {}; identity=ident_obj.get("name") or item.get("identityName") or item.get("name") or "-"; emoji=item.get("identityEmoji") or ""; ws=item.get("workspace") or "-"; print("- 智能體ID: [1;36m%s [0m" % item.get("id","?")); print("身份名稱: %s %s" % (identity, emoji)); print("工作目錄: %s" % ws)' "$(openclaw_multiagent_agents_json)" "$(openclaw_multiagent_bindings_json)" "$(openclaw_multiagent_sessions_json)"
+    for item in agents[:8]:
+        aid = item.get("id","?")
+        identity = item.get("identityName") or item.get("name") or "-"
+        emoji = item.get("identityEmoji") or ""
+        ws = item.get("workspace") or "-"
+        model = item.get("model") or "-"
+        is_default = item.get("isDefault", False)
+        bcount = item.get("bindings", 0)
+        default_tag = "[預設]" if is_default else ""
+        print("- 智能體ID: \033[1;36m%s\033[0m%s" % (aid, default_tag))
+        print("身份名稱: %s %s" % (identity, emoji))
+        print("模型: %s" % model)
+        print("工作目錄: %s" % ws)
+        print("  绑定数: %s" % bcount)
+' "$(openclaw_multiagent_agents_json)" "$(openclaw_multiagent_bindings_json)" "$(openclaw_multiagent_sessions_json)"
 	}
 
 	openclaw_multiagent_list_agents() {
@@ -14851,7 +15031,7 @@ for idx,item in enumerate(agents,1):
 		send_stats "OpenClaw多智能體-新增Agent"
 		openclaw_multiagent_require_openclaw || return 1
 		local agent_id workspace confirm
-		read -e -p "請輸入新的 Agent ID:" agent_id
+		read -e -p "请输入新的 Agent ID: " agent_id
 		[ -z "$agent_id" ] && echo "已取消：Agent ID 不能為空。" && return 1
 		read -e -p "請輸入 workspace 路徑（預設為 ~/.openclaw/workspace-${agent_id}）: " workspace
 		[ -z "$workspace" ] && workspace="~/.openclaw/workspace-${agent_id}"
@@ -14864,7 +15044,7 @@ for idx,item in enumerate(agents,1):
 			local name theme
 			read -e -p "請輸入智能體身分名稱 (如: 代碼專家):" name
 			[ -z "$name" ] && name="$agent_id"
-			read -e -p "請輸入智能體性格主題 (如: 嚴謹、有效率):" theme
+			read -e -p "请输入智能体性格主题 (如: 严谨、高效): " theme
 			[ -z "$theme" ] && theme="助理"
 			echo "正在配置智能體身份..."
 			openclaw agents set-identity --agent "$agent_id" --name "$name" --theme "$theme"
@@ -14884,7 +15064,7 @@ for idx,item in enumerate(agents,1):
 		read -e -p "輸入 DELETE 確認刪除${agent_id}: " confirm
 		[ "$confirm" = "DELETE" ] || { echo "已取消"; return 1; }
 		if openclaw agents delete "$agent_id"; then
-			echo "✅ 智能體刪除成功:$agent_id"
+			echo "✅ 智能体删除成功: $agent_id"
 		else
 			echo "❌ 智能體刪除失敗"
 			return 1
@@ -14893,24 +15073,30 @@ for idx,item in enumerate(agents,1):
 
 	openclaw_multiagent_list_bindings() {
 		send_stats "OpenClaw多智能體-檢視路由綁定"
-		python3 -c 'import json,sys; bindings=json.loads(sys.argv[1] or "[]");
-if not bindings: print("暫無路由綁定。"); raise SystemExit(0)
+		python3 -c '
+import json,sys
+bindings=json.loads(sys.argv[1] or "[]")
+if not bindings:
+    print("暫無路由綁定。")
+    raise SystemExit(0)
 for idx,item in enumerate(bindings,1):
- bind=item.get("bind") or item.get("binding") or item.get("scope") or "-"; print("%s. agent=%s | bind=%s" % (idx, item.get("agentId","?"), bind))' "$(openclaw_multiagent_bindings_json)"
+    desc = item.get("description") or "-"
+    print("%s. agent=%s | %s" % (idx, item.get("agentId","?"), desc))
+' "$(openclaw_multiagent_bindings_json)"
 	}
 
 	openclaw_multiagent_add_binding() {
-		send_stats "OpenClaw多智能體-新增路由綁定"
+		send_stats "OpenClaw多智能体-新增路由绑定"
 		openclaw_multiagent_require_openclaw || return 1
 		local agent_id bind_value confirm
 		read -e -p "請輸入智能體 ID:" agent_id
 		read -e -p "請輸入路由綁定值（如 telegram:ops / discord:guild-a）:" bind_value
 		{ [ -z "$agent_id" ] || [ -z "$bind_value" ]; } && echo "已取消：參數不能為空​​。" && return 1
-		echo "將綁定智能體 [$agent_id] -> [$bind_value]"
+		echo "将绑定智能体 [$agent_id] -> [$bind_value]"
 		read -e -p "輸入 yes 確認繼續:" confirm
 		[ "$confirm" = "yes" ] || { echo "已取消"; return 1; }
 		if openclaw agents bind --agent "$agent_id" --bind "$bind_value"; then
-			echo "✅ 路由綁定新增成功"
+			echo "✅ 路由绑定添加成功"
 		else
 			echo "❌ 路由綁定新增失敗"
 			return 1
@@ -14930,7 +15116,7 @@ for idx,item in enumerate(bindings,1):
 		if openclaw agents unbind --agent "$agent_id" --bind "$bind_value"; then
 			echo "✅ 路由綁定移除成功"
 		else
-			echo "❌ 路由綁定移除失敗"
+			echo "❌ 路由绑定移除失败"
 			return 1
 		fi
 	}
@@ -14938,29 +15124,95 @@ for idx,item in enumerate(bindings,1):
 
 	openclaw_multiagent_show_sessions() {
 		send_stats "OpenClaw多智能體-會話概況"
-		python3 -c 'import json,sys; obj=json.loads(sys.argv[1] or "{}"); sessions=obj.get("sessions",[]) if isinstance(obj,dict) else [];
-if not sessions: print("暫無 session 資料。"); raise SystemExit(0)
+		python3 -c '
+import json,sys
+sess_obj=json.loads(sys.argv[1] or "{}")
+sessions=sess_obj.get("sessions",[]) if isinstance(sess_obj,dict) else []
+if not sessions:
+    print("暫無 session 資料。")
+    raise SystemExit(0)
 by_agent={}
-for item in sessions: by_agent[item.get("agentId","?")]=by_agent.get(item.get("agentId","?"),0)+1
+for item in sessions:
+    aid = item.get("agentId","?")
+    by_agent[aid] = by_agent.get(aid, 0) + 1
 print("會話匯總:")
-for agent_id,count in sorted(by_agent.items()): print("- %s: %s" % (agent_id, count))
+for agent_id,count in sorted(by_agent.items()):
+    print("- %s: %s" % (agent_id, count))
 print("---------------------------------------")
-for item in sessions[:10]: print("%s | %s | %s" % (item.get("agentId","?"), item.get("key","-"), item.get("model") or "-"))' "$(openclaw_multiagent_sessions_json)"
+for item in sessions[:10]:
+    key = item.get("key","-")
+    model = item.get("model") or "-"
+    aid = item.get("agentId","?")
+    tokens = ""
+    it = item.get("inputTokens")
+    ot = item.get("outputTokens")
+    if it is not None:
+        tokens = " | in=%s out=%s" % (it, ot or 0)
+    print("%s | %s | %s%s" % (aid, key, model, tokens))
+' "$(openclaw_multiagent_sessions_json)"
 	}
 
 	openclaw_multiagent_health_check() {
-		send_stats "OpenClaw多智能體-健康檢查"
+		send_stats "OpenClaw多智能体-健康检查"
 		openclaw_multiagent_require_openclaw || return 1
 		local config_file
 		config_file=$(openclaw_multiagent_config_file)
 		echo "檢查設定檔: ${config_file:-$(openclaw_permission_config_file)}"
-		openclaw config validate || echo "⚠️ 配置校驗未通過，請檢查上方輸出。"
-		python3 -c 'import json,sys,os; agents=json.loads(sys.argv[1] or "[]"); bindings=json.loads(sys.argv[2] or "[]"); print("---------------------------------------");
-if not agents: print("⚠️ 未發現配置智能體。");
+		openclaw config validate || echo "⚠️ 配置校验未通过，请检查上方输出。"
+		python3 -c '
+import json,sys,os
+agents=json.loads(sys.argv[1] or "[]")
+bindings=json.loads(sys.argv[2] or "[]")
+print("---------------------------------------")
+if not agents:
+    print("⚠️ 未發現配置智能體。")
 else:
- for item in agents:
-  ws=item.get("workspace") or ""; aid=item.get("id","?"); state="OK" if ws and os.path.isdir(os.path.expanduser(ws)) else ("OK" if aid=="main" else "MISSING"); print("agent=%s workspace=%s [%s]" % (aid, ws or "-", state))
-print("路由綁定數=%s" % len(bindings)); print("✅ 多智能體健康檢查完成")' "$(openclaw_multiagent_agents_json)" "$(openclaw_multiagent_bindings_json)"
+    for item in agents:
+        ws = item.get("workspace") or ""
+        aid = item.get("id","?")
+        if ws and os.path.isdir(os.path.expanduser(ws)):
+            state = "OK"
+        elif aid == "main":
+            state = "OK"
+        else:
+            state = "MISSING"
+        model = item.get("model") or "-"
+        bcount = item.get("bindings", 0)
+        print("agent=%s workspace=%s model=%s bindings=%s [%s]" % (aid, ws or "-", model, bcount, state))
+print("路由綁定數=%s" % len(bindings))
+print("✅ 多智能體健康檢查完成")
+' "$(openclaw_multiagent_agents_json)" "$(openclaw_multiagent_bindings_json)"
+		echo ""
+		echo "運行安全審計..."
+		openclaw security audit 2>/dev/null || echo "⚠️ 安全審計命令不可用"
+	}
+
+
+	openclaw_multiagent_set_identity() {
+		openclaw_multiagent_require_openclaw || return 1
+		openclaw_multiagent_list_agents
+		read -e -p "輸入要修改身分的智能體ID:" agent_id
+		[ -z "$agent_id" ] && { echo "ID 不能為空"; return 1; }
+		echo "修改選項（留空跳過）："
+		read -e -p "新名稱:" new_name
+		read -e -p "新 Emoji:" new_emoji
+		local cmd="openclaw agents set-identity --agent $agent_id"
+		[ -n "$new_name" ] && cmd="$cmd --name $new_name"
+		[ -n "$new_emoji" ] && cmd="$cmd --emoji $new_emoji"
+		echo "也可以從 IDENTITY.md 自動讀取身分資訊。"
+		read -e -p "是否從 IDENTITY.md 讀取？ (y/n):" from_id
+		if [ "$from_id" = "y" ]; then
+			cmd="openclaw agents set-identity --agent $agent_id --from-identity"
+		fi
+		eval "$cmd"
+	}
+
+	openclaw_multiagent_cleanup_sessions() {
+		openclaw_multiagent_require_openclaw || return 1
+		echo "即將清理過期/冗餘會話資料..."
+		read -e -p "輸入 yes 確認:" confirm
+		[ "$confirm" != "yes" ] && { echo "已取消"; return 0; }
+		openclaw sessions cleanup
 	}
 
 	openclaw_multiagent_menu() {
@@ -14979,6 +15231,8 @@ print("路由綁定數=%s" % len(bindings)); print("✅ 多智能體健康檢查
 			echo "5. 移除路由綁定"
 			echo "6. 查看會話概況"
 			echo "7. 執行多智能體健康檢查"
+			echo "8. 修改智能體身分（名稱/Emoji）"
+			echo "9. 清理過期會話"
 			echo "0. 返回上一級"
 			echo "---------------------------------------"
 			read -e -p "請輸入你的選擇:" multi_choice
@@ -14990,6 +15244,8 @@ print("路由綁定數=%s" % len(bindings)); print("✅ 多智能體健康檢查
 				5) openclaw_multiagent_remove_binding; break_end ;;
 				6) openclaw_multiagent_show_sessions; break_end ;;
 				7) openclaw_multiagent_health_check; break_end ;;
+				8) openclaw_multiagent_set_identity; break_end ;;
+				9) openclaw_multiagent_cleanup_sessions; break_end ;;
 				0) return 0 ;;
 				*) echo "無效的選擇，請重試。"; sleep 1 ;;
 			esac
@@ -15111,7 +15367,7 @@ openclaw_backup_restore_menu() {
 
 		domains=$(openclaw_find_webui_domain)
 		if [ -n "$domains" ]; then
-			echo "網域地址："
+			echo "網域名稱地址："
 			echo "$domains" | while read d; do
 				echo "https://${d}/#token=${token}"
 			done
@@ -15303,7 +15559,7 @@ while true; do
 	  echo -e "${gl_kjlan}17.  ${color17}AdGuardHome去廣告軟體${gl_kjlan}18.  ${color18}onlyoffice線上辦公OFFICE"
 	  echo -e "${gl_kjlan}19.  ${color19}雷池WAF防火牆面板${gl_kjlan}20.  ${color20}portainer容器管理面板"
 	  echo -e "${gl_kjlan}-------------------------"
-	  echo -e "${gl_kjlan}21.  ${color21}VScode網頁版${gl_kjlan}22.  ${color22}UptimeKuma监控工具"
+	  echo -e "${gl_kjlan}21.  ${color21}VScode網頁版${gl_kjlan}22.  ${color22}UptimeKuma監控工具"
 	  echo -e "${gl_kjlan}23.  ${color23}Memos網頁備忘錄${gl_kjlan}24.  ${color24}Webtop遠端桌面網頁版${gl_huang}★${gl_bai}"
 	  echo -e "${gl_kjlan}25.  ${color25}Nextcloud網站${gl_kjlan}26.  ${color26}QD-Today定時任務管理框架"
 	  echo -e "${gl_kjlan}27.  ${color27}Dockge容器堆疊管理面板${gl_kjlan}28.  ${color28}LibreSpeed測速工具"
@@ -17402,7 +17658,7 @@ while true; do
 
 		}
 
-		local docker_describe="是一个轻量、高性能的音乐流媒体服务器"
+		local docker_describe="是一個輕量、高效能的音樂串流伺服器"
 		local docker_url="官網介紹: https://www.navidrome.org/"
 		local docker_use=""
 		local docker_passwd=""
@@ -19684,16 +19940,16 @@ env_menu() {
 		send_stats "正在重新載入環境變數"
 		source "$BASHRC"
 		source "$PROFILE"
-		echo "✔ 环境变量已重新加载"
+		echo "✔ 環境變數已重新載入"
 		read -erp "按回車繼續..."
 	}
 
 	while true; do
 		clear
-		echo "=========== 系统环境变量管理 =========="
+		echo "=========== 系統環境變數管理 =========="
 		echo "目前使用者：$USER"
 		echo "--------------------------------------"
-		echo "1. 查看当前常用环境变量"
+		echo "1. 查看目前常用環境變數"
 		echo "2. 查看 ~/.bashrc"
 		echo "3. 查看 ~/.profile"
 		echo "4. 編輯 ~/.bashrc"
@@ -19741,7 +19997,7 @@ create_user_with_sshkey() {
 	local sshkey_vl
 
 	if [[ -z "$new_username" ]]; then
-		echo "用法：create_user_with_sshkey <用户名>"
+		echo "用法：create_user_with_sshkey <使用者名稱>"
 		return 1
 	fi
 
@@ -19831,7 +20087,7 @@ linux_Settings() {
 	  echo -e "${gl_kjlan}------------------------"
 	  echo -e "${gl_kjlan}31.  ${gl_bai}切換系統語言${gl_kjlan}32.  ${gl_bai}命令列美化工具${gl_huang}★${gl_bai}"
 	  echo -e "${gl_kjlan}33.  ${gl_bai}設定係統回收站${gl_kjlan}34.  ${gl_bai}系統備份與復原"
-	  echo -e "${gl_kjlan}35.  ${gl_bai}ssh遠端連線工具${gl_kjlan}36.  ${gl_bai}硬盘分区管理工具"
+	  echo -e "${gl_kjlan}35.  ${gl_bai}ssh遠端連線工具${gl_kjlan}36.  ${gl_bai}硬碟分割區管理工具"
 	  echo -e "${gl_kjlan}37.  ${gl_bai}命令列歷史記錄${gl_kjlan}38.  ${gl_bai}rsync遠端同步工具"
 	  echo -e "${gl_kjlan}39.  ${gl_bai}命令收藏夾${gl_huang}★${gl_bai}                       ${gl_kjlan}40.  ${gl_bai}網路卡管理工具"
 	  echo -e "${gl_kjlan}------------------------"
@@ -21036,7 +21292,7 @@ linux_file() {
 				read -e -p "請輸入目前檔名:" current_name
 				read -e -p "請輸入新檔名:" new_name
 				mv "$current_name" "$new_name" && echo "文件已重新命名" || echo "重新命名失敗"
-				send_stats "重命名文件"
+				send_stats "重新命名文件"
 				;;
 			15) # 删除文件
 				read -e -p "請輸入要刪除的檔名:" filename
@@ -21326,7 +21582,7 @@ echo "------------------------"
 echo -e "${gl_lan}DMIT 28刀每季 美國CN2GIA 1核心 2G記憶體 20G硬碟 800G流量每月${gl_bai}"
 echo -e "${gl_bai}網址: https://www.dmit.io/aff.php?aff=4966&pid=100${gl_bai}"
 echo "------------------------"
-echo -e "${gl_zi}V.PS 6.9刀每月 东京软银 2核心 1G内存 20G硬盘 1T流量每月${gl_bai}"
+echo -e "${gl_zi}V.PS 6.9刀每月 東京軟銀 2核心 1G內存 20G硬碟 1T流量每月${gl_bai}"
 echo -e "${gl_bai}網址: https://vps.hosting/cart/tokyo-cloud-kvm-vps/?id=148&?affid=1355&?affid=1355${gl_bai}"
 echo "------------------------"
 echo -e "${gl_kjlan}VPS更多熱門優惠${gl_bai}"
@@ -21423,10 +21679,13 @@ while true; do
 	echo "全部日誌:${gh_proxy}raw.githubusercontent.com/kejilion/sh/main/kejilion_sh_log.txt"
 	echo "------------------------"
 
-	curl -s ${gh_proxy}raw.githubusercontent.com/kejilion/sh/main/kejilion_sh_log.txt | tail -n 30
-	local sh_v_new=$(curl -s ${gh_proxy}raw.githubusercontent.com/kejilion/sh/main/kejilion.sh | grep -o 'sh_v="[0-9.]*"' | cut -d '"' -f 2)
+	curl -s --max-time 15 ${gh_proxy}raw.githubusercontent.com/kejilion/sh/main/kejilion_sh_log.txt | tail -n 30
+	# 只下載前5行取得版本號，避免下載整個腳本
+	local sh_v_new=$(curl -s --max-time 15 -r 0-200 ${gh_proxy}raw.githubusercontent.com/kejilion/sh/main/kejilion.sh | grep -o 'sh_v="[0-9.]*"' | head -1 | cut -d '"' -f 2)
 
-	if [ "$sh_v" = "$sh_v_new" ]; then
+	if [ -z "$sh_v_new" ]; then
+		echo -e "${gl_hong}無法獲取最新版本信息，請檢查網絡連接${gl_bai}"
+	elif [ "$sh_v" = "$sh_v_new" ]; then
 		echo -e "${gl_lv}你已經是最新版本！${gl_huang}v$sh_v${gl_bai}"
 		send_stats "腳本已經最新了，無需更新"
 	else
@@ -21452,37 +21711,76 @@ while true; do
 	case "$choice" in
 		1)
 			clear
-			local country=$(curl -s ipinfo.io/country)
+			local country=$(curl -s --max-time 5 ipinfo.io/country)
+			local download_url
 			if [ "$country" = "CN" ]; then
-				curl -sS -O ${gh_proxy}raw.githubusercontent.com/kejilion/sh/main/cn/kejilion.sh && chmod +x kejilion.sh
+				download_url="${gh_proxy}raw.githubusercontent.com/kejilion/sh/main/cn/kejilion.sh"
 			else
-				curl -sS -O ${gh_proxy}raw.githubusercontent.com/kejilion/sh/main/kejilion.sh && chmod +x kejilion.sh
+				download_url="${gh_proxy}raw.githubusercontent.com/kejilion/sh/main/kejilion.sh"
 			fi
-			canshu_v6
-			CheckFirstRun_true
-			yinsiyuanquan2
-			cp -f ~/kejilion.sh /usr/local/bin/k > /dev/null 2>&1
-			echo -e "${gl_lv}腳本已更新至最新版本！${gl_huang}v$sh_v_new${gl_bai}"
-			send_stats "腳本已經最新$sh_v_new"
+
+			# 备份当前脚本
+			cp -f ~/kejilion.sh ~/kejilion.sh.bak 2>/dev/null
+
+			# 下載到臨時文件，校驗後再替換
+			local tmp_file=$(mktemp ~/kejilion_tmp.XXXXXX)
+			if curl -sS --max-time 60 --fail -o "$tmp_file" "$download_url" && \
+			   [ -s "$tmp_file" ] && \
+			   head -1 "$tmp_file" | grep -q '^#!/bin/bash'; then
+				chmod +x "$tmp_file"
+				mv -f "$tmp_file" ~/kejilion.sh
+				canshu_v6
+				CheckFirstRun_true
+				yinsiyuanquan2
+				cp -f ~/kejilion.sh /usr/local/bin/k > /dev/null 2>&1
+				ln -sf /usr/local/bin/k /usr/bin/k > /dev/null 2>&1
+				echo -e "${gl_lv}腳本已更新至最新版本！${gl_huang}v$sh_v_new${gl_bai}"
+				send_stats "腳本已經最新$sh_v_new"
+			else
+				rm -f "$tmp_file"
+				# 恢復備份
+				if [ -f ~/kejilion.sh.bak ]; then
+					mv -f ~/kejilion.sh.bak ~/kejilion.sh
+				fi
+				echo -e "${gl_hong}更新失敗！下載出錯或檔案校驗不通過，已恢復原始版本${gl_bai}"
+				send_stats "腳本更新失敗"
+			fi
 			break_end
 			~/kejilion.sh
 			exit
 			;;
 		2)
 			clear
-			local country=$(curl -s ipinfo.io/country)
+			local country=$(curl -s --max-time 5 ipinfo.io/country)
 			local ipv6_address=$(curl -s --max-time 1 ipv6.ip.sb)
+			local cron_proxy cron_sed_cmd
 			if [ "$country" = "CN" ]; then
-				SH_Update_task="curl -sS -O https://gh.kejilion.pro/raw.githubusercontent.com/kejilion/sh/main/kejilion.sh && chmod +x kejilion.sh && sed -i 's/canshu=\"default\"/canshu=\"CN\"/g' ./kejilion.sh"
+				cron_proxy="https://gh.kejilion.pro/"
+				cron_sed_cmd="sed -i 's/canshu=\"default\"/canshu=\"CN\"/g' ~/kejilion.sh"
 			elif [ -n "$ipv6_address" ]; then
-				SH_Update_task="curl -sS -O https://gh.kejilion.pro/raw.githubusercontent.com/kejilion/sh/main/kejilion.sh && chmod +x kejilion.sh && sed -i 's/canshu=\"default\"/canshu=\"V6\"/g' ./kejilion.sh"
+				cron_proxy="https://gh.kejilion.pro/"
+				cron_sed_cmd="sed -i 's/canshu=\"default\"/canshu=\"V6\"/g' ~/kejilion.sh"
 			else
-				SH_Update_task="curl -sS -O https://raw.githubusercontent.com/kejilion/sh/main/kejilion.sh && chmod +x kejilion.sh"
+				cron_proxy="https://"
+				cron_sed_cmd=""
 			fi
+
+			# 建置健全的自動更新指令：下載到暫存檔案 → 校驗 → 備份 → 取代 → 還原本機設定 → 部署
+			SH_Update_task="cd ~ && tmp=\$(mktemp ~/kejilion_tmp.XXXXXX) && curl -sS --max-time 60 --fail -o \"\$tmp\" ${cron_proxy}raw.githubusercontent.com/kejilion/sh/main/kejilion.sh && [ -s \"\$tmp\" ] && head -1 \"\$tmp\" | grep -q '^#!/bin/bash' && cp -f ~/kejilion.sh ~/kejilion.sh.bak 2>/dev/null && chmod +x \"\$tmp\" && mv -f \"\$tmp\" ~/kejilion.sh"
+			# 追加設定恢復
+			if [ -n "$cron_sed_cmd" ]; then
+				SH_Update_task="$SH_Update_task && $cron_sed_cmd"
+			fi
+			# 從舊腳本恢復 permission_granted 和 ENABLE_STATS 設置
+			SH_Update_task="$SH_Update_task && grep -q 'permission_granted=\"true\"' ~/kejilion.sh.bak 2>/dev/null && sed -i 's/permission_granted=\"false\"/permission_granted=\"true\"/' ~/kejilion.sh; grep -q 'ENABLE_STATS=\"false\"' ~/kejilion.sh.bak 2>/dev/null && sed -i 's/ENABLE_STATS=\"true\"/ENABLE_STATS=\"false\"/' ~/kejilion.sh"
+			# 部署到 /usr/local/bin/k 和 /usr/bin/k
+			SH_Update_task="$SH_Update_task; cp -f ~/kejilion.sh /usr/local/bin/k 2>/dev/null; ln -sf /usr/local/bin/k /usr/bin/k 2>/dev/null"
+			# 下載失敗時清理暫存文件
+			SH_Update_task="$SH_Update_task || rm -f \"\$tmp\" 2>/dev/null"
+
 			check_crontab_installed
 			(crontab -l | grep -v "kejilion.sh") | crontab -
-			# (crontab -l 2>/dev/null; echo "0 2 * * * bash -c \"$SH_Update_task\"") | crontab -
-			(crontab -l 2>/dev/null; echo "$(shuf -i 0-59 -n 1) 2 * * * bash -c \"$SH_Update_task\"") | crontab -
+			(crontab -l 2>/dev/null; echo "$(shuf -i 0-59 -n 1) 2 * * * bash -c '$SH_Update_task'") | crontab -
 			echo -e "${gl_lv}自動更新已開啟，每天凌晨2點腳本會自動更新！${gl_bai}"
 			send_stats "開啟腳本自動更新"
 			break_end
@@ -21808,7 +22106,7 @@ else
 			shift
 			case $1 in
 				install|安装)
-					send_stats "快捷安装docker"
+					send_stats "快速安裝docker"
 					install_docker
 					;;
 				ps|容器)
