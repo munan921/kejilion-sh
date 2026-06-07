@@ -1498,7 +1498,7 @@ ssl_ps
 
 ssl_ps() {
 	echo -e "${gl_huang}已申請的證書到期情況${gl_bai}"
-	echo "站點資訊 證書到期時間"
+	echo "網站資訊 證書到期時間"
 	echo "------------------------"
 	for cert_dir in /etc/letsencrypt/live/*; do
 	  local cert_file="$cert_dir/fullchain.pem"
@@ -2358,7 +2358,7 @@ web_optimization() {
 			  echo "1. 標準模式 2. 高效能模式 (建議2H4G以上)"
 			  echo "------------------------"
 			  echo "3. 開啟gzip壓縮 4. 關閉gzip壓縮"
-			  echo "5. 开启br压缩            6. 关闭br压缩"
+			  echo "5. 開啟br壓縮 6. 關閉br壓縮"
 			  echo "7. 開啟zstd壓縮 8. 關閉zstd壓縮"
 			  echo "------------------------"
 			  echo "0. 返回上一級選單"
@@ -2548,7 +2548,7 @@ check_docker_image_update() {
 	local country=$(curl -s --max-time 2 ipinfo.io/country)
 	[[ "$country" == "CN" ]] && return
 
-	# 2. 获取本地镜像信息
+	# 2. 取得本地鏡像訊息
 	local container_info=$(docker inspect --format='{{.Created}},{{.Config.Image}}' "$container_name" 2>/dev/null)
 	[[ -z "$container_info" ]] && return
 
@@ -2559,7 +2559,7 @@ check_docker_image_update() {
 	# 3. 智慧路由判斷
 	if [[ "$full_image_name" == ghcr.io* ]]; then
 		# --- 場景 A: 鏡像在 GitHub (ghcr.io) ---
-		# 提取仓库路径，例如 ghcr.io/onexru/oneimg -> onexru/oneimg
+		# 提取倉庫路徑，例如 ghcr.io/onexru/oneimg -> onexru/oneimg
 		local repo_path=$(echo "$full_image_name" | sed 's/ghcr.io\///' | cut -d':' -f1)
 		# 註：ghcr.io 的 API 比較複雜，通常最快的方法是查 GitHub Repo 的 Release
 		local api_url="https://api.github.com/repos/$repo_path/releases/latest"
@@ -2898,7 +2898,7 @@ while true; do
 
 				if ss -tuln | grep -q ":$app_port "; then
 					echo -e "${gl_hong}錯誤:${gl_bai}連接埠$app_port已被佔用，請更換一個端口"
-					send_stats "应用端口已被占用"
+					send_stats "應用程式連接埠已被佔用"
 				else
 					local docker_port=$app_port
 					break
@@ -3219,7 +3219,7 @@ f2b_sshd() {
 	fi
 }
 
-# 基础参数配置：封禁时长(bantime)、时间窗口(findtime)、重试次数(maxretry)
+# 基礎參數配置：封禁時長(bantime)、時間視窗(findtime)、重試次數(maxretry)
 # 說明：
 # - 優先寫入 /etc/fail2ban/jail.d/sshd.local（覆蓋預設 jail 配置，升級不易丟）
 # - 若是 Alpine 且 jail 名稱不同，仍寫 sshd.local；Fail2Ban 會以 jail 名稱配對
@@ -3243,7 +3243,7 @@ f2b_basic_config() {
 	echo "即將配置 SSH jail：$jail_name"
 	read -e -p "封禁時長 bantime (秒/分鐘/小時，如 3600 或 1h) [預設 1h]:" bantime
 	read -e -p "時間窗口 findtime (秒/分鐘/小時，如 600 或 10m) [預設 10m]:" findtime
-	read -e -p "重试次数 maxretry (整数) [默认 5]: " maxretry
+	read -e -p "重試次數 maxretry (整數) [預設 5]:" maxretry
 
 	bantime=${bantime:-1h}
 	findtime=${findtime:-10m}
@@ -3629,7 +3629,7 @@ list_stream_services() {
 			proto="tcp"
 		fi
 
-		# 拼接监听 IP:端口
+		# 拼接監聽 IP:端口
 		local_addr="$local_ip:$listen_port"
 
 		printf "%-22s %-14s %-21s %-20s\n" "$service_name" "$proto" "$local_addr" "$backend"
@@ -3645,7 +3645,7 @@ list_stream_services() {
 
 
 stream_panel() {
-	send_stats "Stream四层代理"
+	send_stats "Stream四層代理"
 	local app_id="104"
 	local docker_name="nginx"
 
@@ -3653,7 +3653,7 @@ stream_panel() {
 		clear
 		check_docker_app
 		check_docker_image_update $docker_name
-		echo -e "Stream四层代理转发工具 $check_docker $update_status"
+		echo -e "Stream四層代理轉送工具$check_docker $update_status"
 		echo "NGINX Stream 是 NGINX 的 TCP/UDP 代理模組，用於實現高效能的 傳輸層流量轉送和負載平衡。"
 		echo "------------------------"
 		if [ -d "/home/web/stream.d" ]; then
@@ -3752,7 +3752,7 @@ ldnmp_Proxy_backend_stream() {
 		*) echo "無效選擇"; return 1 ;;
 	esac
 
-	read -e -p "请输入你的一个或者多个后端IP+端口用空格隔开（例如 10.13.0.2:3306 10.13.0.3:3306）： " reverseproxy_port
+	read -e -p "請輸入你的一個或多個後端IP+埠以空格隔開（例如 10.13.0.2:3306 10.13.0.3:3306）：" reverseproxy_port
 
 	nginx_install_status
 	cd /home && mkdir -p web/stream.d
@@ -3890,7 +3890,7 @@ ldnmp_web_status() {
 			2)
 				send_stats "克隆站點域名"
 				read -e -p "請輸入舊網域名稱:" oddyuming
-				read -e -p "請輸入新網域:" yuming
+				read -e -p "請輸入新網域名稱:" yuming
 				install_certbot
 				install_ssltls
 				certs_status
@@ -3931,7 +3931,7 @@ ldnmp_web_status() {
 				send_stats "建立關聯站點"
 				echo -e "為現有的站點再關聯一個新網域用於訪問"
 				read -e -p "請輸入現有的網域名稱:" oddyuming
-				read -e -p "請輸入新網域:" yuming
+				read -e -p "請輸入新網域名稱:" yuming
 				install_certbot
 				install_ssltls
 				certs_status
@@ -4169,7 +4169,7 @@ remote_port = ${remote_port}
 EOF
 
 	# 輸出產生的信息
-	echo "服務$service_name已成功加入到 frpc.toml"
+	echo "服務$service_name已成功加入 frpc.toml"
 
 	docker restart frpc
 
@@ -4735,7 +4735,7 @@ linux_clean() {
 		rm -rf /var/log/*
 		echo "刪除APK快取..."
 		rm -rf /var/cache/apk/*
-		echo "删除临时文件..."
+		echo "刪除臨時檔案..."
 		rm -rf /tmp/*
 
 	elif command -v pacman &>/dev/null; then
@@ -5100,8 +5100,8 @@ fetch_github_ssh_keys() {
 	echo "4. 將本機公鑰內容（通常是 ~/.ssh/id_ed25519.pub 或 id_rsa.pub 的全部內容）貼到 Key 字段"
 	echo "5. 點選 Add SSH key 完成新增"
 	echo ""
-	echo "添加完成后，GitHub 会公开提供您的所有公钥，地址为："
-	echo "  ${gh_https_url}github.com/您的用户名.keys"
+	echo "新增完成後，GitHub 會公開提供您的所有公鑰，位址為："
+	echo "  ${gh_https_url}github.com/您的使用者名稱.keys"
 	echo ""
 
 
@@ -5672,7 +5672,7 @@ bbrv3() {
 						package="${prefix}-x64v${level}"
 						if xanmod_package_available "$package"; then
 							if [ "$level" != "$psabi_level" ] || [ "$prefix" = "linux-xanmod-lts" ]; then
-								echo "已自动匹配合适安装包: $package" >&2
+								echo "已自動配對合適安裝包:$package" >&2
 							fi
 							printf '%s\n' "$package"
 							return 0
@@ -5841,7 +5841,7 @@ elrepo_install() {
 		break_end
 		linux_Settings
 	fi
-	# 启用 ELRepo 内核仓库并安装最新的主线内核
+	# 啟用 ELRepo 內核倉庫並安裝最新的主線內核
 	echo "啟用 ELRepo 核心倉庫並安裝最新的主線核心..."
 	# yum -y --enablerepo=elrepo-kernel install kernel-ml
 	yum --nogpgcheck -y --enablerepo=elrepo-kernel install kernel-ml
@@ -5967,7 +5967,7 @@ clamav_scan() {
 		clamscan -r --log=/var/log/clamav/scan.log $SCAN_PARAMS
 
 	echo -e "${gl_lv}$@ 扫描完成，病毒报告存放在${gl_huang}/home/docker/clamav/log/scan.log${gl_bai}"
-	echo -e "${gl_lv}如果有病毒请在${gl_huang}scan.log${gl_lv}文件中搜尋FOUND關鍵字確認病毒位置${gl_bai}"
+	echo -e "${gl_lv}如果有病毒請在${gl_huang}scan.log${gl_lv}文件中搜尋FOUND關鍵字確認病毒位置${gl_bai}"
 
 }
 
@@ -6200,7 +6200,7 @@ net.ipv4.tcp_slow_start_after_idle = 0"
 	# ── 寫入設定檔（持久化） ──
 	echo -e "${gl_lv}寫入優化配置...${gl_bai}"
 	cat > "$CONF" << SYSCTL
-# kejilion 内核调优配置
+# kejilion 核心調優配置
 # 模式: $mode_name | 場景: $scene
 # 記憶體: ${MEM_MB}MB | 產生時間: $(date '+%Y-%m-%d %H:%M:%S')
 
@@ -6929,7 +6929,7 @@ kj_ssh_read_auth() {
 	echo "請選擇身份驗證方式:"
 	echo "1. 密碼"
 	echo "2. 密鑰"
-	read -e -p "请输入选择 (1/2): " auth_choice
+	read -e -p "請輸入選擇 (1/2):" auth_choice
 
 	case $auth_choice in
 		1)
@@ -7091,7 +7091,7 @@ use_connection() {
 
 
 ssh_manager() {
-	send_stats "ssh远程连接工具"
+	send_stats "ssh遠端連線工具"
 
 	CONFIG_FILE="$HOME/.ssh_connections"
 	KEY_DIR="$HOME/.ssh/ssh_manager_keys"
@@ -7122,7 +7122,7 @@ ssh_manager() {
 			2) use_connection ;;
 			3) delete_connection ;;
 			0) break ;;
-			*) echo "无效的选择，请重试。" ;;
+			*) echo "無效的選擇，請重試。" ;;
 		esac
 	done
 }
@@ -7138,7 +7138,7 @@ ssh_manager() {
 
 
 
-# 列出可用的硬盘分区
+# 列出可用的硬碟分割區
 list_partitions() {
 	echo "可用的硬碟分割區："
 	lsblk -o NAME,SIZE,FSTYPE,MOUNTPOINT | grep -v "sr\|loop"
@@ -7189,7 +7189,7 @@ mount_partition() {
 		return 1
 	fi
 
-	echo "分割區已成功掛載到$MOUNT_POINT"
+	echo "分區已成功掛載到$MOUNT_POINT"
 
 	# 檢查 /etc/fstab 是否已經存在 UUID 或掛載點
 	if grep -qE "UUID=$UUID|[[:space:]]$MOUNT_POINT[[:space:]]" /etc/fstab; then
@@ -8361,7 +8361,7 @@ docker_ssh_migration() {
 		while true; do
 			clear
 			echo "------------------------"
-			echo -e "Docker备份/迁移/还原工具"
+			echo -e "Docker備份/遷移/還原工具"
 			echo "------------------------"
 			list_backups
 			echo -e ""
@@ -8827,7 +8827,7 @@ linux_test() {
 
 		  31)
 			  clear
-			  send_stats "bench性能测试"
+			  send_stats "bench效能測試"
 			  curl -Lso- bench.sh | bash
 			  ;;
 		  32)
@@ -9459,8 +9459,8 @@ linux_ldnmp() {
 	  clear
 	  echo -e "[${gl_huang}1/6${gl_bai}] 上傳PHP原始碼"
 	  echo "-------------"
-	  echo "目前只允許上傳zip格式的源碼包，請將源碼包放到/home/web/html/${yuming}目录下"
-	  read -e -p "也可以输入下载链接，远程下载源码包，直接回车将跳过远程下载： " url_download
+	  echo "目前只允許上傳zip格式的源碼包，請將源碼包放到/home/web/html/${yuming}目錄下"
+	  read -e -p "也可以輸入下載鏈接，遠端下載源碼包，直接回車將跳過遠端下載：" url_download
 
 	  if [ -n "$url_download" ]; then
 		  wget "$url_download"
@@ -9944,7 +9944,7 @@ linux_ldnmp() {
 
 			  2)
 			  local ldnmp_pods="mysql"
-			  read -e -p "請輸入${ldnmp_pods}版本号 （如: 8.0 8.3 8.4 9.0）（回车获取最新版）: " version
+			  read -e -p "請輸入${ldnmp_pods}版本號碼 （如: 8.0 8.3 8.4 9.0）（回車取得最新版）:" version
 			  local version=${version:-latest}
 
 			  cd /home/web/
@@ -10142,7 +10142,7 @@ moltbot_menu() {
 		echo "3. 停止"
 		echo "--------------------"
 		echo "4. 狀態日誌查看"
-		echo "5.  换模型"
+		echo "5. 換模型"
 		echo "6. API管理"
 		echo "7. 機器人連線對接"
 		echo "8. 插件管理（安裝/刪除）"
@@ -10432,7 +10432,7 @@ for name, provider in list(providers.items()):
         summary.append(f'🔁 {name}: /models 第 {attempts} 次重試後成功')
 
     if not (isinstance(data, dict) and isinstance(data.get('data'), list)):
-        summary.append(f'⚠️ 跳过 {name}: /models 返回结构不可识别')
+        summary.append(f'⚠️ 跳過 {name}: /models 回傳結構不可識別')
         continue
 
     remote_ids = []
@@ -11229,7 +11229,7 @@ PY2
 			echo "❌ 同步失敗：上游 /models 請求失敗"
 			;;
 		5)
-			echo "❌ 同步失败：上游模型为空或同步后无可用模型"
+			echo "❌ 同步失敗：上游模型為空或同步後無可用模型"
 			;;
 		*)
 			echo "❌ 同步失敗：請檢查設定檔結構或日誌輸出"
@@ -11310,7 +11310,7 @@ with open(path, 'w', encoding='utf-8') as f:
     json.dump(work, f, ensure_ascii=False, indent=2)
     f.write('\n')
 
-print(f'✅ 已更新 provider {name} 协议为: {new_api}')
+print(f'✅ 已更新 provider {name} 協定為: {new_api}')
 PY
 	local rc=$?
 	case "$rc" in
@@ -11342,7 +11342,7 @@ PY
 			return 1
 		fi
 
-		read -erp "请输入要删除的 API 名称(provider): " provider_name
+		read -erp "請輸入要刪除的 API 名稱(provider):" provider_name
 		if [ -z "$provider_name" ]; then
 			send_stats "OpenClaw API刪除取消"
 			echo "❌ provider 名稱不能為空"
@@ -11538,7 +11538,7 @@ PY
 		echo ""
 		echo -e "${gl_huang}提示：複製連結到瀏覽器開啟即可訪問${gl_bai}"
 		echo ""
-		read -erp "按回车键返回..." dummy
+		read -erp "按回車鍵返回..." dummy
 	}
 
 	openclaw_api_manage_menu() {
@@ -11861,7 +11861,7 @@ PYTHON_EOF
 			# 若 gum 不存在，降級為原始手動輸入流程
 			if ! command -v gum >/dev/null 2>&1 || ! gum --version >/dev/null 2>&1; then
 				echo "--- 模型管理 ---"
-				echo "当前可用模型:"
+				echo "目前可用模型:"
 				jq -r '.agents.defaults.models | if type == "object" then keys[] else .[] end' "$oc_config" 2>/dev/null | sed '/^\s*$/d'
 				echo "----------------"
 				read -e -p "請輸入要設定的模型名稱 (例如 openrouter/openai/gpt-4o)（輸入 0 退出）：" selected_model
@@ -12217,7 +12217,7 @@ PYTHON_EOF
 			[ "$plugin_action" = "0" ] && break
 			[ -z "$plugin_action" ] && continue
 
-			read -e -p "请输入插件 ID（空格分隔，输入 0 退出）： " raw_input
+			read -e -p "請輸入插件 ID（空格分隔，輸入 0 退出）：" raw_input
 			[ "$raw_input" = "0" ] && break
 			[ -z "$raw_input" ] && continue
 
@@ -12800,9 +12800,9 @@ EOF
 	openclaw_offer_transfer_hint() {
 		local file_path="$1"
 
-		echo "可使用以下方式下载备份文件："
-		echo "- 本地路径: $file_path"
-		echo "- scp 示例: scp root@你的服务器:$file_path ./"
+		echo "可使用以下方式下載備份檔："
+		echo "- 本地路徑:$file_path"
+		echo "- scp 範例: scp root@你的伺服器:$file_path ./"
 		echo "- 或使用 SFTP 用戶端下載"
 	}
 
@@ -12930,8 +12930,8 @@ if os.path.isdir(agents_root):
 		fi
 
 		echo "備份模式："
-		echo "1. 安全模式（默认，推荐）：workspace + openclaw.json + extensions/skills/prompts/tools（如存在）"
-		echo "2. 完整模式（含更多状态，敏感风险更高）"
+		echo "1. 安全模式（默認，建議）：workspace + openclaw.json + extensions/skills/prompts/tools（如存在）"
+		echo "2. 完整模式（含更多狀態，敏感風險較高）"
 		read -e -p "請選擇備份模式（預設 1）:" export_mode
 		[ -z "$export_mode" ] && export_mode="1"
 
@@ -13391,7 +13391,7 @@ $agent_lines
 EOF
 		openclaw gateway restart
 		echo "✅ 索引已重建並自動重新啟動網關"
-		echo "✅ 已為${count} 个智能体重建索引"
+		echo "✅ 已為${count}個智能體重建索引"
 		echo ""
 		openclaw_memory_render_status
 	}
@@ -13406,7 +13406,7 @@ EOF
 		fi
 		memory_dir="$workspace/memory"
 		if [ ! -d "$memory_dir" ]; then
-			echo "🔧 [$agent_id] 记忆目录不存在，已自动创建: $memory_dir"
+			echo "🔧 [$agent_id] 記憶目錄不存在，已自動建立:$memory_dir"
 			mkdir -p "$memory_dir"
 		fi
 		return 0
@@ -13716,7 +13716,7 @@ PY
 			return 1
 		fi
 		if ! qmd --version >/dev/null 2>&1; then
-			echo "❌ qmd 安装后仍无法运行"
+			echo "❌ qmd 安裝後仍無法運作"
 			return 1
 		fi
 		OPENCLAW_MEMORY_QMD_PATH="$qmd_path"
@@ -13737,7 +13737,7 @@ PY
 			echo "索引: 已跳過"
 		fi
 		if [ "$OPENCLAW_MEMORY_RESTARTED" = "true" ]; then
-			echo "重启: 已执行"
+			echo "重啟: 已執行"
 		else
 			echo "重啟: 已跳過"
 		fi
@@ -13774,9 +13774,9 @@ PY
 		if [ -n "$OPENCLAW_MEMORY_EXPECT_SIZE" ]; then
 			echo "可能流量/磁碟佔用:$OPENCLAW_MEMORY_EXPECT_SIZE"
 		else
-			echo "可能流量/磁盘占用: 视实际情况而定"
+			echo "可能流量/磁碟佔用: 視實際情況而定"
 		fi
-		echo "确认后将自动安装/下载、写入配置、构建索引并重启网关"
+		echo "確認後將自動安裝/下載、寫入設定、建置索引並重新啟動網關"
 		echo "進階選項: 輸入 config 僅寫入設定（不安裝不下載、不索引、不重新啟動）"
 		read -e -p "輸入 yes 確認繼續（預設 N）:" confirm_step
 		case "$confirm_step" in
@@ -13862,7 +13862,7 @@ EOF
 			echo "✅ memorySearch.provider 已是 local"
 		else
 			openclaw_memory_config_set "agents.defaults.memorySearch.provider" "local"
-			echo "✅ 已设置 agents.defaults.memorySearch.provider=local"
+			echo "✅ 已設定 agents.defaults.memorySearch.provider=local"
 		fi
 
 		local model_path model_status
@@ -14058,7 +14058,7 @@ EOF
 			echo "這會導致預設記憶檔案（MEMORY.md + memory/*.md）不被索引"
 			echo "所以 Indexed 會一直顯示 0/N"
 			echo ""
-			read -e -p "是否恢復為 true 並重建索引？ (Y/n):" fix_choice
+			read -e -p "是否恢复为 true 并重建索引？ (Y/n):" fix_choice
 			if [[ ! "$fix_choice" =~ ^[Nn]$ ]]; then
 				openclaw_memory_config_set "memory.qmd.includeDefaultMemory" true
 				if [ $? -ne 0 ]; then
@@ -14104,7 +14104,7 @@ EOF
 			echo "Local: 本機向量檢索，依賴 embedding 模型文件"
 			echo "Auto : 自動推薦（基於可用性 + 網路探測）"
 			echo "---------------------------------------"
-			echo "1. 切换 QMD（自动部署/已装则跳过）"
+			echo "1. 切換 QMD（自動部署/已安裝則跳過）"
 			echo "2. 切換 Local（自動部署/已安裝則跳過）"
 			echo "3. Auto（自動推薦並自動部署）"
 			echo "0. 返回上一級"
@@ -14591,9 +14591,9 @@ print(json.dumps(data, indent=2))
 		if [ "$current_profile" = "full" ] && [ "$current_sec" = "full" ] && [ "$current_ask" = "off" ]; then
 			current_mode="\033[1;31m完全開放模式\033[0m"
 		elif [ "$current_profile" = "coding" ] && [ "$current_sec" = "allowlist" ] && [ "$current_ask" = "on-miss" ] && [ "$current_elevated" = "true" ]; then
-			current_mode="\033[1;33m开发增强模式\033[0m"
+			current_mode="\033[1;33m開發增強模式\033[0m"
 		elif [ "$current_profile" = "coding" ] && [ "$current_sec" = "allowlist" ] && [ "$current_ask" = "on-miss" ] && [ "$current_elevated" != "true" ]; then
-			current_mode="\033[1;32m标准安全模式\033[0m"
+			current_mode="\033[1;32m標準安全模式\033[0m"
 		elif [ -z "$current_profile" ] && [ -z "$current_sec" ]; then
 			current_mode="\033[1;36m官方沙盒兜底\033[0m"
 		fi
@@ -14632,7 +14632,7 @@ except Exception as e:
     print("(解析失敗:" + str(e) + ")")
 ' "$approvals_json"
 			else
-				echo "  (openclaw approvals get --json 无输出)"
+				echo "(openclaw approvals get --json 無輸出)"
 			fi
 		elif [ -f "$HOME/.openclaw/exec-approvals.json" ]; then
 			python3 -c '
@@ -14686,7 +14686,7 @@ except Exception:
 		openclaw_permission_update_exec_approvals "allowlist" "on-miss" "deny"
 
 		openclaw_permission_restart_gateway
-		echo -e "${gl_lv}✅ 已切换为开发增强模式 (允许提权，但常规危险命令依然需要审批)${gl_bai}"
+		echo -e "${gl_lv}✅ 已切換為開發增強模式 (允許提權，但常規危險命令仍需審批)${gl_bai}"
 	}
 
 	openclaw_permission_apply_full() {
@@ -14712,7 +14712,7 @@ except Exception:
 		send_stats "OpenClaw權限-恢復官方默認"
 		openclaw_permission_require_openclaw || return 1
 
-		echo "清理应用层强制覆盖..."
+		echo "清理應用層強制覆蓋..."
 		openclaw config unset tools.profile >/dev/null 2>&1
 		openclaw config unset tools.exec.security >/dev/null 2>&1
 		openclaw config unset tools.exec.ask >/dev/null 2>&1
@@ -15105,7 +15105,7 @@ for idx,item in enumerate(agents,1):
 			echo "正在配置智能體身份..."
 			openclaw agents set-identity --agent "$agent_id" --name "$name" --theme "$theme"
 		else
-			echo "❌ 智能體創建失敗"
+			echo "❌ 智能體建立失敗"
 			return 1
 		fi
 	}
@@ -15319,7 +15319,7 @@ openclaw_backup_restore_menu() {
 			echo "======================================="
 			openclaw_backup_render_file_list
 			echo "---------------------------------------"
-			echo "1. 备份记忆全量"
+			echo "1. 備份記憶全量"
 			echo "2. 還原記憶全量"
 			echo "3. 備份 OpenClaw 專案（預設安全模式）"
 			echo "4. 還原 OpenClaw 專案（進階/高風險）"
@@ -15423,7 +15423,7 @@ openclaw_backup_restore_menu() {
 
 		domains=$(openclaw_find_webui_domain)
 		if [ -n "$domains" ]; then
-			echo "網域地址："
+			echo "網域名稱地址："
 			echo "$domains" | while read d; do
 				echo "https://${d}/#token=${token}"
 			done
@@ -15657,7 +15657,7 @@ while true; do
 	  echo -e "${gl_kjlan}97.  ${color97}WireGuard組網(服務端)${gl_kjlan}98.  ${color98}WireGuard組網(客戶端)"
 	  echo -e "${gl_kjlan}99.  ${color99}DSM群暉虛擬機${gl_kjlan}100. ${color100}Syncthing點對點檔案同步工具"
 	  echo -e "${gl_kjlan}-------------------------"
-	  echo -e "${gl_kjlan}101. ${color101}AI影片產生工具${gl_kjlan}102. ${color102}VoceChat多人線上聊天系統"
+	  echo -e "${gl_kjlan}101. ${color101}AI影片生成工具${gl_kjlan}102. ${color102}VoceChat多人線上聊天系統"
 	  echo -e "${gl_kjlan}103. ${color103}Umami網站統計工具${gl_kjlan}104. ${color104}Stream四層代理轉送工具"
 	  echo -e "${gl_kjlan}105. ${color105}思源筆記${gl_kjlan}106. ${color106}Drawnix開源白板工具"
 	  echo -e "${gl_kjlan}107. ${color107}PanSou網盤搜尋${gl_kjlan}108. ${color108}LangBot聊天機器人"
@@ -18923,7 +18923,7 @@ while true; do
 
 	  101|moneyprinterturbo)
 		local app_id="101"
-		local app_name="AI影片產生工具"
+		local app_name="AI影片生成工具"
 		local app_text="MoneyPrinterTurbo是一款使用AI大模型合成高清短影片的工具"
 		local app_url="官方網站:${gh_https_url}github.com/harry0703/MoneyPrinterTurbo"
 		local docker_name="moneyprinterturbo"
@@ -20305,7 +20305,7 @@ EOF
 						send_stats "SSH連接埠已修改"
 						new_ssh_port $new_port
 					elif [[ $new_port -eq 0 ]]; then
-						send_stats "退出SSH連接埠修改"
+						send_stats "退出SSH埠修改"
 						break
 					else
 						echo "連接埠號碼無效，請輸入1到65535之間的數字。"
@@ -20932,7 +20932,7 @@ EOF
 			  echo "TG-bot監控預警功能"
 			  echo "影片介紹: https://youtu.be/vLL-eb3Z_TY"
 			  echo "------------------------------------------------"
-			  echo "您需要設定tg機器人API和接收預警的用戶ID，即可實現本機CPU，內存，硬碟，流量，SSH登入的即時監控預警"
+			  echo "您需要設定tg機器人API和接收預警的使用者ID，即可實現本機CPU，內存，硬碟，流量，SSH登入的即時監控預警"
 			  echo "到達閾值後會向用戶發送預警訊息"
 			  echo -e "${gl_hui}-關於流量，重啟伺服器將重新計算-${gl_bai}"
 			  read -e -p "確定繼續嗎？ (Y/N):" choice
@@ -21283,7 +21283,7 @@ linux_file() {
 		echo "1. 進入目錄 2. 建立目錄 3. 修改目錄權限 4. 重新命名目錄"
 		echo "5. 刪除目錄 6. 返回上一層選單目錄"
 		echo "------------------------"
-		echo "11. 建立文件 12. 編輯文件 13. 修改文件權限 14. 重新命名文件"
+		echo "11. 建立檔案 12. 編輯檔案 13. 修改檔案權限 14. 重新命名文件"
 		echo "15. 刪除文件"
 		echo "------------------------"
 		echo "21. 壓縮檔案目錄 22. 解壓縮檔案目錄 23. 行動檔案目錄 24. 複製檔案目錄"
@@ -21788,7 +21788,7 @@ while true; do
 				yinsiyuanquan2
 				cp -f ~/kejilion.sh /usr/local/bin/k > /dev/null 2>&1
 				ln -sf /usr/local/bin/k /usr/bin/k > /dev/null 2>&1
-				echo -e "${gl_lv}腳本已更新至最新版本！${gl_huang}v$sh_v_new${gl_bai}"
+				echo -e "${gl_lv}腳本已更新到最新版本！${gl_huang}v$sh_v_new${gl_bai}"
 				send_stats "腳本已經最新$sh_v_new"
 			else
 				rm -f "$tmp_file"
